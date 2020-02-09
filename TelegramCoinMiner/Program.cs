@@ -32,16 +32,20 @@ namespace TelegramCoinMiner
 
             Console.WriteLine("Enter phone number as +71234567890");
             string phone = Console.ReadLine();
+            bool sessionExist=File.Exists(phone + ".dat");
 
+          
             var client = new TelegramClient(apiId, apiHash, sessionUserId: phone); //cleint
             await client.ConnectAsync();
 
-            if (!File.Exists(phone + ".dat"))
-            {
+            if (!sessionExist)
+            { 
+
                 var hash = await client.SendCodeRequestAsync(phone);
                 Console.WriteLine("Enter telegram code");
                 string code = Console.ReadLine();
                 var user = await client.MakeAuthAsync(phone, hash, code);
+
             }
 
             var dialogs = (TLDialogs)await client.GetUserDialogsAsync();

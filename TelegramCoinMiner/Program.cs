@@ -10,16 +10,18 @@ namespace TelegramCoinMiner
 {
     class Program
     {
+        static CefSharpWrapper wrapper = new CefSharpWrapper();
         private static void Main()
         {
+            wrapper.InitializeBrowser();
+            
             MainAsync().Wait();
+
+            wrapper.ShutdownBrowser();
         }
 
         private static async Task MainAsync()
         {
-            CefSharpWrapper wrapper = new CefSharpWrapper();
-
-            wrapper.InitializeBrowser();
 
             int apiId = 1038521;
             string apiHash = "e365dd8b6c6336da17a4537f5fae2870"; //API-key Tema
@@ -32,20 +34,18 @@ namespace TelegramCoinMiner
 
             Console.WriteLine("Enter phone number as +71234567890");
             string phone = Console.ReadLine();
-            bool sessionExist=File.Exists(phone + ".dat");
+            
+            bool sessionExist = File.Exists(phone + ".dat");
 
-          
             var client = new TelegramClient(apiId, apiHash, sessionUserId: phone); //cleint
             await client.ConnectAsync();
 
             if (!sessionExist)
             { 
-
                 var hash = await client.SendCodeRequestAsync(phone);
                 Console.WriteLine("Enter telegram code");
                 string code = Console.ReadLine();
                 var user = await client.MakeAuthAsync(phone, hash, code);
-
             }
 
             var dialogs = (TLDialogs)await client.GetUserDialogsAsync();
@@ -95,7 +95,6 @@ namespace TelegramCoinMiner
                 }
                 Console.WriteLine(sms.Message);
             }
-            wrapper.ShutdownBrowser();
         }
     }
 }

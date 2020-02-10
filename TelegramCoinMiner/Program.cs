@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,14 +35,14 @@ namespace TelegramCoinMiner
 
             Console.WriteLine("Enter phone number as +71234567890");
             string phone = Console.ReadLine();
-            
+
             bool sessionExist = File.Exists(phone + ".dat");
 
             var client = new TelegramClient(apiId, apiHash, sessionUserId: phone); //cleint
             await client.ConnectAsync();
 
             if (!sessionExist)
-            { 
+            {
                 var hash = await client.SendCodeRequestAsync(phone);
                 Console.WriteLine("Enter telegram code");
                 string code = Console.ReadLine();
@@ -54,16 +55,46 @@ namespace TelegramCoinMiner
                 .OfType<TLUser>()
                 .FirstOrDefault(c => c.FirstName == botName);
 
-            TLMessagesSlice res = await client.GetMessages((long)channel.AccessHash, channel.Id);
+            var messages = (await client.GetMessages((long)channel.AccessHash, channel.Id))
+                .Messages
+                .OfType<TLMessage>();
 
+            GetButtonNew(messages);
 
-            foreach (var mes in res.Messages)
+            await GetButtonOld(messages);
+        }
+
+        private static void GetButtonNew(IEnumerable<TLMessage> messages)
+        {
+            var keyboardLinesButtons = messages
+                            .Select(x => x.ReplyMarkup) //берем разметку сообщений
+                            .OfType<TLReplyInlineMarkup>() //берем тип, содержащий кнопки
+                            .Select(x => x.Rows.Select(row => row.Buttons)); //берем все кнопки из строк
+
+            //преобразовываем список списков в одномерный список
+            var absButtons = new List<TLAbsKeyboardButton>();
+            foreach (var buttonsLine in keyboardLinesButtons)
+            {
+                foreach (var buttons in buttonsLine)
+                {
+                    absButtons.AddRange(buttons);
+                }
+            }
+
+            //ищем кнопку для перехода по ссылке
+            var goToWebsiteButton = absButtons
+                .OfType<TLKeyboardButtonUrl>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains("go to website"));
+        }
+
+        private static async Task GetButtonOld(IEnumerable<TLMessage> messages)
+        {
+            foreach (var message in messages)
             { //смотрим сообщение
-                TLMessage sms = mes as TLMessage;
                 Console.WriteLine("-----------------------------------------------");
-                Console.WriteLine(sms.Message); //вывод сообщений
+                Console.WriteLine(message.Message); //вывод сообщений
 
-                TLReplyInlineMarkup Mark = sms.ReplyMarkup as TLReplyInlineMarkup;
+                TLReplyInlineMarkup Mark = message.ReplyMarkup as TLReplyInlineMarkup;
                 if (Mark == null) { continue; } //Если сообщение не содержит кнопок со ссылками
                 var rows = Mark.Rows;
 
@@ -93,7 +124,7 @@ namespace TelegramCoinMiner
                         }
                     }
                 }
-                Console.WriteLine(sms.Message);
+                Console.WriteLine(message.Message);
             }
         }
     }

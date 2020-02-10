@@ -17,7 +17,7 @@ namespace TelegramCoinMiner
             wrapper.InitializeBrowser();
             
             MainAsync().Wait();
-
+            Console.ReadKey();
             wrapper.ShutdownBrowser();
         }
 
@@ -59,12 +59,15 @@ namespace TelegramCoinMiner
                 .Messages
                 .OfType<TLMessage>();
 
-            GetButtonNew(messages);
+            var keyNew = GetButtonNew(messages);
 
-            await GetButtonOld(messages);
+            var keyOld = GetButtonOld(messages);
+
+            Console.WriteLine(string.Compare(keyNew.Url, keyOld.Url));
+            //await wrapper.GetResultAfterPageLoad(key.Url, async () => { return Task.Delay(15000); });
         }
 
-        private static void GetButtonNew(IEnumerable<TLMessage> messages)
+        private static TLKeyboardButtonUrl GetButtonNew(IEnumerable<TLMessage> messages)
         {
             var keyboardLinesButtons = messages
                             .Select(x => x.ReplyMarkup) //берем разметку сообщений
@@ -85,9 +88,11 @@ namespace TelegramCoinMiner
             var goToWebsiteButton = absButtons
                 .OfType<TLKeyboardButtonUrl>()
                 .FirstOrDefault(x => x.Text.ToLower().Contains("go to website"));
+
+            return goToWebsiteButton;
         }
 
-        private static async Task GetButtonOld(IEnumerable<TLMessage> messages)
+        private static TLKeyboardButtonUrl GetButtonOld(IEnumerable<TLMessage> messages)
         {
             foreach (var message in messages)
             { //смотрим сообщение
@@ -119,13 +124,14 @@ namespace TelegramCoinMiner
                             proc.Kill();
                             }
                             */
-                            Console.WriteLine("Был переход по ссылке:" + key.Url);
-                            await wrapper.GetResultAfterPageLoad(key.Url, async () => { return Task.Delay(15000); });
+                            //Console.WriteLine("Был переход по ссылке:" + key.Url);
+                            return key;
                         }
                     }
                 }
-                Console.WriteLine(message.Message);
+                //Console.WriteLine(message.Message);
             }
+            return null;
         }
     }
 }

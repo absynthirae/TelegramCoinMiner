@@ -55,83 +55,9 @@ namespace TelegramCoinMiner
                 .OfType<TLUser>()
                 .FirstOrDefault(c => c.FirstName == botName);
 
-            var messages = (await client.GetMessages((long)channel.AccessHash, channel.Id))
+            var messages = (await client.GetMessages((long)channel.AccessHash, channel.Id, 5))
                 .Messages
                 .OfType<TLMessage>();
-
-            var keyNew = GetButtonNew(messages);
-
-            var keyOld = GetButtonOld(messages);
-
-            Console.WriteLine(string.Compare(keyNew.Url, keyOld.Url));
-            //await wrapper.GetResultAfterPageLoad(key.Url, async () => { return Task.Delay(15000); });
-        }
-
-        private static TLKeyboardButtonUrl GetButtonNew(IEnumerable<TLMessage> messages)
-        {
-            var keyboardLinesButtons = messages
-                            .Select(x => x.ReplyMarkup) //берем разметку сообщений
-                            .OfType<TLReplyInlineMarkup>() //берем тип, содержащий кнопки
-                            .Select(x => x.Rows.Select(row => row.Buttons)); //берем все кнопки из строк
-
-            //преобразовываем список списков в одномерный список
-            var absButtons = new List<TLAbsKeyboardButton>();
-            foreach (var buttonsLine in keyboardLinesButtons)
-            {
-                foreach (var buttons in buttonsLine)
-                {
-                    absButtons.AddRange(buttons);
-                }
-            }
-
-            //ищем кнопку для перехода по ссылке
-            var goToWebsiteButton = absButtons
-                .OfType<TLKeyboardButtonUrl>()
-                .FirstOrDefault(x => x.Text.ToLower().Contains("go to website"));
-
-            return goToWebsiteButton;
-        }
-
-        private static TLKeyboardButtonUrl GetButtonOld(IEnumerable<TLMessage> messages)
-        {
-            foreach (var message in messages)
-            { //смотрим сообщение
-                Console.WriteLine("-----------------------------------------------");
-                Console.WriteLine(message.Message); //вывод сообщений
-
-                TLReplyInlineMarkup Mark = message.ReplyMarkup as TLReplyInlineMarkup;
-                if (Mark == null) { continue; } //Если сообщение не содержит кнопок со ссылками
-                var rows = Mark.Rows;
-
-                foreach (TLKeyboardButtonRow keyRow in rows)  //бегаем по строкам 
-                {
-                    TLVector<TLAbsKeyboardButton> buttons = keyRow.Buttons;  //берем все кнопки
-
-                    Console.WriteLine($"Buttons {buttons.Count}");
-                    if (buttons.Count <= 0) { continue; };
-
-                    foreach (TLAbsKeyboardButton keyBtn in buttons) //бегаем по взятым кнопкам 
-                    {
-                        if (!(keyBtn is TLKeyboardButtonUrl)) { continue; }
-                        var key = (TLKeyboardButtonUrl)keyBtn;
-                        if (key.Text.Contains("Go to website"))
-                        { //если кнопка содержит текст то:
-                            /*Переход по ссылке*/
-                            /*
-                            Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\Chrome.exe" + " " + key.Url);
-                            await Task.Delay(15000);
-                            foreach (var proc in Process.GetProcessesByName("Chrome.exe")) {
-                            proc.Kill();
-                            }
-                            */
-                            //Console.WriteLine("Был переход по ссылке:" + key.Url);
-                            return key;
-                        }
-                    }
-                }
-                //Console.WriteLine(message.Message);
-            }
-            return null;
         }
     }
 }

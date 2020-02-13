@@ -9,15 +9,17 @@ namespace TelegramCoinMiner
 {
     static class TLSharpExtensions
     {
-        public async static Task<TLMessagesSlice> GetMessages(this TelegramClient client, long accessHash, int userId, int count)
+        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, long accessHash, int userId, int count)
         {
-            return await client.SendRequestAsync<TLMessagesSlice>(new TLRequestGetHistory()
+            var messagesSlice = await client.SendRequestAsync<TLMessagesSlice>(new TLRequestGetHistory()
             {
                 Peer = new TLInputPeerUser { AccessHash = accessHash, UserId = userId },
                 Limit = count,
                 AddOffset = 0,
                 OffsetId = 0
             });
+
+            return messagesSlice.Messages;
         }
 
         public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string keyText)
@@ -45,13 +47,25 @@ namespace TelegramCoinMiner
             return goToWebsiteButton;
         }
 
-        public static bool hasCaptcha(this string html) {
+        public static async Task<TLUser> GetChannelByName(this TelegramClient client, string channelName)
+        {
+            var dialogs = (TLDialogs)await client.GetUserDialogsAsync(); //получаем все диалоги
+
+            var channel = dialogs.Users
+                .OfType<TLUser>()
+                .FirstOrDefault(c => c.FirstName.ToLower() == channelName.ToLower()); //берем нужный нам канал(юзер потому что бот)
+            
+            return channel;
+        }
+
+        public static bool HasCaptcha(this string html) {
             // чисто примитив
-            if (html.ToLower().Contains("captcha")) { return true};
+            if (html.ToLower().Contains("captcha"))
+            {
+                return true; 
+            }
 
             return false;
-
-
         }
     }
 }

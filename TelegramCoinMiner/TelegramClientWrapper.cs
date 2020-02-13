@@ -1,12 +1,11 @@
 ﻿using CefSharp.OffScreen;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using TeleSharp.TL;
 using TLSharp.Core;
+using CefSharp;
 
 namespace TelegramCoinMiner
 {
@@ -14,8 +13,9 @@ namespace TelegramCoinMiner
     {
         private bool _sessionExist = false;
         private TelegramClient _client;
-        private Thread _workerThread;
+        private Task _workerThread;
         private ChromiumWebBrowser _browser;
+        private const int _readMessagesCount = 2; //чтобы не всегда пять сообщений брать
         public bool IsStarted { get; private set; } = false;
 
         public TelegramClientWrapper(int apiId, string apiHash, string phone, ChromiumWebBrowser browser)
@@ -25,7 +25,7 @@ namespace TelegramCoinMiner
             _browser = browser;
         }
 
-        async Task ConnectAsync()
+        public async Task ConnectAsync()
         {
             await _client.ConnectAsync();
 
@@ -35,10 +35,11 @@ namespace TelegramCoinMiner
             }
         }
 
-        public void Start()
+        public async Task Start(string botName)
         {
             IsStarted = true;
-            _workerThread = new Thread(new ThreadStart(InvokeAlgoritm));
+            var botChannel = await _client.GetChannelByName(botName);
+            _workerThread = new Task(async () => await InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
             _workerThread.Start();
         }
 
@@ -47,17 +48,31 @@ namespace TelegramCoinMiner
             IsStarted = false;
             if (_workerThread != null)
             {
-                _workerThread.Join();
-                _workerThread.Abort();
+                _workerThread.Wait();
                 _workerThread = null;
             }
         }
 
-        private void InvokeAlgoritm()
+        private async Task InvokeAlgoritm(TLUser botChannel)
         {
             while (IsStarted)
             {
-                //Do smth
+                var messages = await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _readMessagesCount); //сообщения
+                var url = messages
+                    .OfType<TLMessage>()
+                    .GetButtonWithUrl("go to website")
+                    .Url;
+
+                _browser.Load(url);
+                var curentHtml = await _browser.GetSourceAsync();
+
+                if (curentHtml.HasCaptcha())
+                {
+                    //Надо скипнуть задачу в телеге
+                    continue;
+                }//втупую капча
+
+                await Task.Delay(15000); //надо подумать сколько ждать потмоу что часто сообщение приходит после перехода и после нажатия на кнопку
             }
         }
     }

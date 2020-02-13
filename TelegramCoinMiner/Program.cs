@@ -49,15 +49,15 @@ namespace TelegramCoinMiner
                 var user = await client.MakeAuthAsync(phone, hash, code);
             }
 
-            var dialogs = (TLDialogs)await client.GetUserDialogsAsync();
+           // var dialogs = (TLDialogs)await client.GetUserDialogsAsync();
 
-            var channel = dialogs.Users
+           /* var channel = dialogs.Users
                 .OfType<TLUser>()
                 .FirstOrDefault(c => c.FirstName == botName);
 
             var messages = (await client.GetMessages((long)channel.AccessHash, channel.Id, 5))
                 .Messages
-                .OfType<TLMessage>();
+                .OfType<TLMessage>(); */
         }
     }
 }

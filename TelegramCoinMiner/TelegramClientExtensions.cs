@@ -44,5 +44,14 @@ namespace TelegramCoinMiner
             
             return goToWebsiteButton;
         }
+
+        public static bool hasCaptcha(this string html) {
+            // чисто примитив
+            if (html.ToLower().Contains("captcha")) { return true};
+
+            return false;
+
+
+        }
     }
 }

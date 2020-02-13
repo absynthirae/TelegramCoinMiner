@@ -10,7 +10,7 @@ namespace TelegramCoinMiner
     {
         public string BotName { get; set; }
 
-        public CoinClickBotInfo CreateBitcoinClickBotInfo()
+        public static CoinClickBotInfo CreateBitcoinClickBotInfo()
         {
             return new CoinClickBotInfo { BotName = "BTC Click Bot" };
         }

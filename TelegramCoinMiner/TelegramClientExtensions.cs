@@ -7,13 +7,13 @@ using TLSharp.Core;
 
 namespace TelegramCoinMiner
 {
-    static class TelegramClientExtensions
+    static class TLSharpExtensions
     {
         public async static Task<TLMessagesSlice> GetMessages(this TelegramClient client, long accessHash, int userId, int count)
         {
             return await client.SendRequestAsync<TLMessagesSlice>(new TLRequestGetHistory()
             {
-                Peer = new TeleSharp.TL.TLInputPeerUser { AccessHash = accessHash, UserId = userId },
+                Peer = new TLInputPeerUser { AccessHash = accessHash, UserId = userId },
                 Limit = count,
                 AddOffset = 0,
                 OffsetId = 0
@@ -41,7 +41,7 @@ namespace TelegramCoinMiner
             var goToWebsiteButton = absButtons
                 .OfType<TLKeyboardButtonUrl>()
                 .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
-
+            
             return goToWebsiteButton;
         }
     }

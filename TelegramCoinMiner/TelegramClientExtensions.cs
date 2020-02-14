@@ -67,5 +67,6 @@ namespace TelegramCoinMiner
 
             return false;
         }
+
     }
 }

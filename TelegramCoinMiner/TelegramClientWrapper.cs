@@ -72,7 +72,13 @@ namespace TelegramCoinMiner
                     continue;
                 }//втупую капча
 
-                await Task.Delay(15000); //надо подумать сколько ждать потмоу что часто сообщение приходит после перехода и после нажатия на кнопку
+                int time = 15; 
+                (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _readMessagesCount))
+                    .OfType<TLMessage>().Where(x=>x.Message.Contains("seconds")).FirstOrDefault()
+                    .Message.Split(new char[] { ' ' }).FirstOrDefault(x=>int.TryParse(x, out time ));
+                
+
+                await Task.Delay(time); //надо подумать сколько ждать потмоу что часто сообщение приходит после перехода и после нажатия на кнопку
             }
         }
     }

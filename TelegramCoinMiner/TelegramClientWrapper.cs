@@ -70,7 +70,7 @@ namespace TelegramCoinMiner
                 {
                     //Надо скипнуть задачу в телеге
                     continue;
-                }//втупую капча
+                }//втупую капча1
 
                 int time = 15; 
                 (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _readMessagesCount))

@@ -38,7 +38,7 @@ namespace TelegramCoinMiner
         public async Task Start(string botName)
         {
             IsStarted = true;
-            var botChannel = await _client.GetChannelByName(botName);
+            var botChannel = await _client.GetChannelByName(botName);      
             _workerThread = new Task(async () => await InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
             _workerThread.Start();
         }

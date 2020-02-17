@@ -32,9 +32,10 @@ namespace TelegramCoinMiner
 
             TelegramClientWrapper telegramClient = new TelegramClientWrapper(apiId, apiHash, phone, wrapper._browser);
 
-            await telegramClient.Start(CoinClickBotInfo.CreateBitcoinClickBotInfo());
+            await telegramClient.Start();
 
-            if (Console.ReadKey().Key == ConsoleKey.Escape) {           
+            if (Console.ReadKey().Key == ConsoleKey.Escape) 
+            {           
                 telegramClient.Stop();
                 Console.WriteLine("Вы прервали процесс");
             }

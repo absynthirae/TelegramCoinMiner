@@ -22,7 +22,7 @@ namespace TelegramCoinMiner
             return messagesSlice.Messages;
         }
 
-        public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string keyText)
+        public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string searchText)
         {
             var keyboardLinesButtons = messages
                             .Select(x => x.ReplyMarkup) //берем разметку сообщений
@@ -40,16 +40,16 @@ namespace TelegramCoinMiner
             }
 
             //ищем кнопку для перехода по ссылке
-            var goToWebsiteButton = absButtons
+            var button = absButtons
                 .OfType<TLKeyboardButtonUrl>()
-                .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
             
-            return goToWebsiteButton;
+            return button;
             
         }
 
 
-        public static TLKeyboardButtonCallback GetButtonWithCallBack(this IEnumerable<TLMessage> messages, string keyText)
+        public static TLKeyboardButtonCallback GetButtonWithCallBack(this IEnumerable<TLMessage> messages, string searchText)
         {
             var keyboardLinesButtons = messages
                             .Select(x => x.ReplyMarkup) //берем разметку сообщений
@@ -67,11 +67,11 @@ namespace TelegramCoinMiner
             }
 
             //ищем кнопку для перехода по ссылке
-            var goToWebsiteButton = absButtons
+            var button = absButtons
                 .OfType<TLKeyboardButtonCallback>()
-                .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
 
-            return goToWebsiteButton;
+            return button;
         }
 
 
@@ -87,12 +87,10 @@ namespace TelegramCoinMiner
         }
 
         public static bool HasCaptcha(this string html) {
-            // чисто примитив
             if (html.ToLower().Contains("captcha"))
             {
                 return true; 
             }
-
             return false;
         }
 

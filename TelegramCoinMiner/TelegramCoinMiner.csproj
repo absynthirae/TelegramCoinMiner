@@ -86,12 +86,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TelegramClientExtensions.cs" />
+    <Compile Include="TLSharpExtensions.cs" />
     <Compile Include="TelegramClientWrapper.cs" />
   </ItemGroup>
   <ItemGroup>

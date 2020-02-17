@@ -28,7 +28,7 @@ namespace TelegramCoinMiner
                             .Select(x => x.ReplyMarkup) //берем разметку сообщений
                             .OfType<TLReplyInlineMarkup>() //берем тип, содержащий кнопки
                             .Select(x => x.Rows.Select(row => row.Buttons)); //берем все кнопки из строк
-
+         
             //преобразовываем список списков в одномерный список
             var absButtons = new List<TLAbsKeyboardButton>();
             foreach (var buttonsLine in keyboardLinesButtons)
@@ -45,7 +45,35 @@ namespace TelegramCoinMiner
                 .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
             
             return goToWebsiteButton;
+            
         }
+
+
+        public static TLKeyboardButtonCallback GetButtonWithCallBack(this IEnumerable<TLMessage> messages, string keyText)
+        {
+            var keyboardLinesButtons = messages
+                            .Select(x => x.ReplyMarkup) //берем разметку сообщений
+                            .OfType<TLReplyInlineMarkup>() //берем тип, содержащий кнопки
+                            .Select(x => x.Rows.Select(row => row.Buttons)); //берем все кнопки из строк
+
+            //преобразовываем список списков в одномерный список
+            var absButtons = new List<TLAbsKeyboardButton>();
+            foreach (var buttonsLine in keyboardLinesButtons)
+            {
+                foreach (var buttons in buttonsLine)
+                {
+                    absButtons.AddRange(buttons);
+                }
+            }
+
+            //ищем кнопку для перехода по ссылке
+            var goToWebsiteButton = absButtons
+                .OfType<TLKeyboardButtonCallback>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
+
+            return goToWebsiteButton;
+        }
+
 
         public static async Task<TLUser> GetChannelByName(this TelegramClient client, string channelName)
         {

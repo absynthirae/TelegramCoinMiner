@@ -13,7 +13,7 @@ namespace TelegramCoinMiner
 
     public sealed class CefSharpWrapper
     {
-        private ChromiumWebBrowser _browser;
+        public ChromiumWebBrowser _browser; //соврменнные прорблемы ...
 
         public void InitializeBrowser()
         {

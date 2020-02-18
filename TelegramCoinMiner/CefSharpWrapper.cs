@@ -17,9 +17,12 @@ namespace TelegramCoinMiner
 
         public void InitializeBrowser()
         {
+
+            var setting = new CefSettings();
+            setting.LogSeverity = LogSeverity.Disable;
             Cef.EnableHighDPISupport();
             // Perform dependency check to make sure all relevant resources are in our output directory.
-            Cef.Initialize(new CefSettings(), performDependencyCheck: false, browserProcessHandler: null);
+            Cef.Initialize(setting, performDependencyCheck: false, browserProcessHandler: null);
 
             _browser = new ChromiumWebBrowser();
 

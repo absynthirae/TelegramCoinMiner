@@ -76,6 +76,7 @@ namespace TelegramCoinMiner
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
+            
             while (IsStarted)
             {
                 Console.WriteLine("Начало метода");
@@ -99,7 +100,7 @@ namespace TelegramCoinMiner
 
                 //Console.WriteLine(curentHtml);
 
-                Console.WriteLine("-------------------------------");
+                Console.WriteLine("-----------------------------------");
                 if (curentHtml.HasCaptcha())
                 {
                     Console.WriteLine("Капча");

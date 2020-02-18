@@ -52,8 +52,7 @@ namespace TelegramCoinMiner
 
                 IsStarted = true;
                 var botChannel = await _client.GetChannelByName(_botInfo.BotName);
-
-                await _client.SendMessageAsync(new TLInputPeerUser() { UserId = botChannel.Id, AccessHash = botChannel.AccessHash.Value }, "/visit"); //стартуем бот-канал с той стороны
+                await SendVisitCommand(botChannel);
                 await Task.Delay(2000);
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
                 _workerThread.Start();
@@ -62,6 +61,11 @@ namespace TelegramCoinMiner
             { 
                 throw new Exception("Коннект провален"); 
             }
+        }
+
+        private async Task SendVisitCommand(TLUser channel)
+        {
+            await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit"); //стартуем бот-канал с той стороны
         }
 
         public void Stop()

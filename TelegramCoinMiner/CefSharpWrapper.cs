@@ -19,6 +19,7 @@ namespace TelegramCoinMiner
         {
 
             var setting = new CefSettings();
+            
             setting.LogSeverity = LogSeverity.Disable;
             Cef.EnableHighDPISupport();
             // Perform dependency check to make sure all relevant resources are in our output directory.

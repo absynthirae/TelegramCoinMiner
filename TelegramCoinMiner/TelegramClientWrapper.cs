@@ -26,7 +26,7 @@ namespace TelegramCoinMiner
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
             
-          //  _browser.LifeSpanHandler = new LifeSpanHandler();
+           _browser.LifeSpanHandler = new LifeSpanHandler();
         }
 
         private async Task ConnectAsync()

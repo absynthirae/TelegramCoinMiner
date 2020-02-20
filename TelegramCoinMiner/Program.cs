@@ -12,10 +12,10 @@ namespace TelegramCoinMiner
     class Program
     {
         static CefSharpWrapper wrapper = new CefSharpWrapper();
+        
         private static void Main()
         {
-            wrapper.InitializeBrowser();
-            
+            wrapper.InitializeBrowser();         
             MainAsync().Wait();
             Console.ReadKey();
             wrapper.ShutdownBrowser();
@@ -23,41 +23,26 @@ namespace TelegramCoinMiner
 
         private static async Task MainAsync()
         {
-
+            
             int apiId = 1038521;
+
             string apiHash = "e365dd8b6c6336da17a4537f5fae2870"; //API-key Tema
 
-            #region TargetData
-
-            string botName = "BTC Click Bot";
-
-            #endregion
-
             Console.WriteLine("Enter phone number as +71234567890");
-            string phone = Console.ReadLine();
 
-            bool sessionExist = File.Exists(phone + ".dat");
+            string phone = Console.ReadLine();           
 
-            var client = new TelegramClient(apiId, apiHash, sessionUserId: phone); //cleint
-            await client.ConnectAsync();
+            TelegramClientWrapper telegramClient = new TelegramClientWrapper(apiId, apiHash, phone, wrapper._browser);
 
-            if (!sessionExist)
-            {
-                var hash = await client.SendCodeRequestAsync(phone);
-                Console.WriteLine("Enter telegram code");
-                string code = Console.ReadLine();
-                var user = await client.MakeAuthAsync(phone, hash, code);
+            await telegramClient.Start();
+
+            if (Console.ReadKey().Key == ConsoleKey.Escape) 
+            {           
+                telegramClient.Stop();
+                Console.WriteLine("Вы прервали процесс");
             }
 
-           // var dialogs = (TLDialogs)await client.GetUserDialogsAsync();
 
-           /* var channel = dialogs.Users
-                .OfType<TLUser>()
-                .FirstOrDefault(c => c.FirstName == botName);
-
-            var messages = (await client.GetMessages((long)channel.AccessHash, channel.Id, 5))
-                .Messages
-                .OfType<TLMessage>(); */
         }
     }
 }

@@ -22,7 +22,34 @@ namespace TelegramCoinMiner
             return messagesSlice.Messages;
         }
 
-        public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string keyText)
+        public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string searchText)
+        {
+            var keyboardLinesButtons = messages
+                            .Select(x => x.ReplyMarkup) //берем разметку сообщений
+                            .OfType<TLReplyInlineMarkup>() //берем тип, содержащий кнопки
+                            .Select(x => x.Rows.Select(row => row.Buttons)); //берем все кнопки из строк
+         
+            //преобразовываем список списков в одномерный список
+            var absButtons = new List<TLAbsKeyboardButton>();
+            foreach (var buttonsLine in keyboardLinesButtons)
+            {
+                foreach (var buttons in buttonsLine)
+                {
+                    absButtons.AddRange(buttons);
+                }
+            }
+
+            //ищем кнопку для перехода по ссылке
+            var button = absButtons
+                .OfType<TLKeyboardButtonUrl>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
+            
+            return button;
+            
+        }
+
+
+        public static TLKeyboardButtonCallback GetButtonWithCallBack(this IEnumerable<TLMessage> messages, string searchText)
         {
             var keyboardLinesButtons = messages
                             .Select(x => x.ReplyMarkup) //берем разметку сообщений
@@ -40,12 +67,13 @@ namespace TelegramCoinMiner
             }
 
             //ищем кнопку для перехода по ссылке
-            var goToWebsiteButton = absButtons
-                .OfType<TLKeyboardButtonUrl>()
-                .FirstOrDefault(x => x.Text.ToLower().Contains(keyText.ToLower()));
-            
-            return goToWebsiteButton;
+            var button = absButtons
+                .OfType<TLKeyboardButtonCallback>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
+
+            return button;
         }
+
 
         public static async Task<TLUser> GetChannelByName(this TelegramClient client, string channelName)
         {
@@ -59,13 +87,12 @@ namespace TelegramCoinMiner
         }
 
         public static bool HasCaptcha(this string html) {
-            // чисто примитив
             if (html.ToLower().Contains("captcha"))
             {
                 return true; 
             }
-
             return false;
         }
+
     }
 }

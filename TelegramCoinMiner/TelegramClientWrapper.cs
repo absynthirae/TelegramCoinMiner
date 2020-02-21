@@ -51,11 +51,12 @@ namespace TelegramCoinMiner
                 await ConnectAsync();
                 _clientIsConnected = true;
             }
-            catch (Exception) { _clientIsConnected = false; }
+            catch (Exception) { 
+                _clientIsConnected = false; 
+            }
 
             if (_clientIsConnected)
             {
-
                 IsStarted = true;
                 var botChannel = await _client.GetChannelByName(_botInfo.BotName);
                 //await SendVisitCommand(botChannel);
@@ -70,18 +71,11 @@ namespace TelegramCoinMiner
                     Console.WriteLine("После неизвестной ошибки проект перезапускается");
                     await Start();
                 }
-
-
             }
             else
             {
                 throw new Exception("Коннект провален");
             }
-        }
-
-        private async Task SendVisitCommand(TLUser channel)
-        {
-            await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit"); //стартуем бот-канал с той стороны
         }
 
         public void Stop()
@@ -96,93 +90,99 @@ namespace TelegramCoinMiner
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
-
-
-
             await SendVisitCommand(botChannel);
-            await Task.Delay(2000);
             while (IsStarted)
             {
                 try
                 {
+                    //Wait task message
+                    await Task.Delay(2000);
                     Console.WriteLine("-----------------------------------");
-                    Console.WriteLine("Начало метода");
-                    var messages = await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount);
-
-                    var url = messages
-                        .OfType<TLMessage>()
-                        .GetButtonWithUrl("go to website")
-                        .Url;
+                    var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
+                    string url = GetUrlFromTaskMessage(messages);
 
                     Console.WriteLine("URL:" + url);
 
-
-                    await _browser.LoadPageAsync(url);
-
-                    Console.WriteLine("Перешли по ссылке");
-
-                    var curentHtml = await _browser.GetSourceAsync();
-
-
-
-
-                    if (curentHtml.HasCaptcha())
+                    string html = await _browser.GetHtmlAfterPageLoad(url);
+                    Console.WriteLine("Страница загружена");
+                    if (html.HasCaptcha())
                     {
                         Console.WriteLine("Капча");
-
-
-                        var skipCallbackButton = messages.OfType<TLMessage>().GetButtonWithCallBack("Skip");
-
-                        var data = skipCallbackButton.Data;
-
-                        var messageId = messages.Select(x => x).OfType<TLMessage>().FirstOrDefault(x => x.Message.ToLower().Contains("visit website")).Id;
-
-                        var res = await _client.SendRequestAsync<object>(
-
-                            new TLRequestGetBotCallbackAnswer()
-                            {
-                                Peer = new TLInputPeerUser() { UserId = botChannel.Id, AccessHash = botChannel.AccessHash.Value },
-                                Data = data,
-                                MsgId = messageId
-                            });
-
+                        await SkipTask(botChannel, messages);
                         continue;
                     }
 
-                    int time = 15;
+                    //Wait message about task wait time
                     await Task.Delay(2000);
-                    (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))
-                        .OfType<TLMessage>()
-                        .Where(x => x.Message.Contains("seconds"))
-                        .FirstOrDefault()
-                        .Message
-                        .Split(new char[] { ' ' })
-                        .FirstOrDefault(x => int.TryParse(x, out time));
 
-                    await Task.Delay(time * 1000);
+                    await WaitTaskСompletion(botChannel);
 
-                    await Task.Delay(3000);
-
-                    Console.WriteLine("Всё прошло нормально " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+                    Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));
                 }
                 catch (NullReferenceException)
                 {
                     Console.WriteLine("Нет ссылок - запрос на ссылки");
                     await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
-                    await Task.Delay(1000);            //добавили делэй
-
                 }
                 catch (Exception)                       //не известное исключение => перезапуск
                 {
                     Console.WriteLine("Неизвестная ошибка");
                     await SendVisitCommand(botChannel);
-                    await Task.Delay(1000);
                     throw new Exception("FatalError");
                 }
-
             }
+        }
 
+        private async Task SendVisitCommand(TLUser channel)
+        {
+            await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit"); //стартуем бот-канал с той стороны
+        }
 
+        private async Task WaitTaskСompletion(TLUser botChannel)
+        {
+            int time = await GetTaskWaitTimeInSeconds(botChannel);
+            await Task.Delay(time * 1000);
+        }
+
+        /// <summary>
+        /// Get messages from channel and parse task wait time 
+        /// </summary>
+        /// <param name="botChannel"></param>
+        /// <returns></returns>
+        private async Task<int> GetTaskWaitTimeInSeconds(TLUser botChannel)
+        {
+            //Default time
+            int time = 15;
+            (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))
+                .OfType<TLMessage>()
+                .Where(x => x.Message.Contains("seconds"))
+                .FirstOrDefault()
+                .Message
+                .Split(new char[] { ' ' })
+                .FirstOrDefault(x => int.TryParse(x, out time));
+            return time;
+        }
+
+        private async Task SkipTask(TLUser botChannel, TLVector<TLAbsMessage> messages)
+        {
+            var skipCallbackButton = messages.OfType<TLMessage>().GetButtonWithCallBack("Skip");
+            var data = skipCallbackButton.Data;
+            var messageId = messages.Select(x => x).OfType<TLMessage>().FirstOrDefault(x => x.Message.ToLower().Contains("visit website")).Id;
+            await _client.SendRequestAsync<object>(
+                new TLRequestGetBotCallbackAnswer()
+                {
+                    Peer = new TLInputPeerUser() { UserId = botChannel.Id, AccessHash = botChannel.AccessHash.Value },
+                    Data = data,
+                    MsgId = messageId
+                });
+        }
+
+        private static string GetUrlFromTaskMessage(TLVector<TLAbsMessage> messages)
+        {
+            return messages
+                .OfType<TLMessage>()
+                .GetButtonWithUrl("go to website")
+                .Url;
         }
     }
 }

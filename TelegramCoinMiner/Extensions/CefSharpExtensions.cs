@@ -31,5 +31,21 @@ namespace TelegramCoinMiner
             }
             return tcs.Task;
         }
+
+        public async static Task<string> GetHtmlAfterPageLoad(this ChromiumWebBrowser browser, string url)
+        {
+            await browser.LoadPageAsync(url);
+            var html = await browser.GetSourceAsync();
+            return html;
+        }
+
+        public static bool HasCaptcha(this string html)
+        {
+            if (html.ToLower().Contains("captcha"))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

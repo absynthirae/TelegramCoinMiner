@@ -22,6 +22,11 @@ namespace TelegramCoinMiner
             return messagesSlice.Messages;
         }
 
+        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, TLUser channel, int count)
+        {
+            return await client.GetMessages(channel.AccessHash.Value, channel.Id, count);
+        }
+
         public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string searchText)
         {
             var keyboardLinesButtons = messages
@@ -85,14 +90,5 @@ namespace TelegramCoinMiner
             
             return channel;
         }
-
-        public static bool HasCaptcha(this string html) {
-            if (html.ToLower().Contains("captcha"))
-            {
-                return true; 
-            }
-            return false;
-        }
-
     }
 }

@@ -94,14 +94,14 @@
     <Compile Include="BotsControllerForm.Designer.cs">
       <DependentUpon>BotsControllerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CefSharpExtensions.cs" />
+    <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TLSharpExtensions.cs" />
+    <Compile Include="Extensions\TLSharpExtensions.cs" />
     <Compile Include="TelegramClientWrapper.cs" />
   </ItemGroup>
   <ItemGroup>

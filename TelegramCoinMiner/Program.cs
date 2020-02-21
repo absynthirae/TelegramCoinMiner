@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
@@ -15,6 +16,7 @@ namespace TelegramCoinMiner
         
         private static void Main()
         {
+            
             wrapper.InitializeBrowser();         
             MainAsync().Wait();
             Console.ReadKey();
@@ -23,7 +25,8 @@ namespace TelegramCoinMiner
 
         private static async Task MainAsync()
         {
-            
+
+
             int apiId = 1038521;
 
             string apiHash = "e365dd8b6c6336da17a4537f5fae2870"; //API-key Tema

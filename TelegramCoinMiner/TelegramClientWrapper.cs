@@ -12,12 +12,17 @@ namespace TelegramCoinMiner
 {
     public class TelegramClientWrapper
     {
-        private bool _sessionExist = false;
-        private TelegramClient _client;
-        private Task _workerThread;
-        private ChromiumWebBrowser _browser;
+        private bool _sessionExist = false; // Check of session-file exist
+        private TelegramClient _client; 
+        private Task _workerThread; //  worker
+
+        private ChromiumWebBrowser _browser; 
         private bool _clientIsConnected = false;
-        public bool IsStarted { get; private set; } = false;
+        /// <summary>
+        /// farm is started
+        /// </summary>
+        public bool IsStarted { get; private set; } = false; 
+
         private CoinClickBotInfo _botInfo = CoinClickBotInfo.CreateBitcoinClickBotInfo();
 
         public TelegramClientWrapper(int apiId, string apiHash, string phone, ChromiumWebBrowser browser)
@@ -26,7 +31,7 @@ namespace TelegramCoinMiner
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
             
-           _browser.LifeSpanHandler = new LifeSpanHandler();
+            _browser.LifeSpanHandler = new LifeSpanHandler();
         }
 
         private async Task ConnectAsync()
@@ -60,17 +65,17 @@ namespace TelegramCoinMiner
                 {
                     _workerThread.Start();
                 }
-                catch  
+                catch
                 {
                     Console.WriteLine("После неизвестной ошибки проект перезапускается");
                     await Start();
                 }
 
 
-            } 
-            else 
-            { 
-                throw new Exception("Коннект провален"); 
+            }
+            else
+            {
+                throw new Exception("Коннект провален");
             }
         }
 
@@ -92,89 +97,92 @@ namespace TelegramCoinMiner
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
 
-            
-            
-                await SendVisitCommand(botChannel);
-                await Task.Delay(2000);
-                while (IsStarted)
+
+
+            await SendVisitCommand(botChannel);
+            await Task.Delay(2000);
+            while (IsStarted)
+            {
+                try
                 {
-                    try
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine("Начало метода");
+                    var messages = await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount);
+
+                    var url = messages
+                        .OfType<TLMessage>()
+                        .GetButtonWithUrl("go to website")
+                        .Url;
+
+                    Console.WriteLine("URL:" + url);
+
+
+                    await _browser.LoadPageAsync(url);
+
+                    Console.WriteLine("Перешли по ссылке");
+
+                    var curentHtml = await _browser.GetSourceAsync();
+
+
+
+
+                    if (curentHtml.HasCaptcha())
                     {
-                        Console.WriteLine("-----------------------------------");
-                        Console.WriteLine("Начало метода");
-                        var messages = await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount);
-
-                        var url = messages
-                            .OfType<TLMessage>()
-                            .GetButtonWithUrl("go to website")
-                            .Url;
-
-                        Console.WriteLine("URL:" + url);
-
-                        
-                        await _browser.LoadPageAsync(url);
-
-                        Console.WriteLine("Перешли по ссылке");
-
-                        var curentHtml = await _browser.GetSourceAsync();
-
-                     
+                        Console.WriteLine("Капча");
 
 
-                        if (curentHtml.HasCaptcha())
-                        {
-                            Console.WriteLine("Капча");
+                        var skipCallbackButton = messages.OfType<TLMessage>().GetButtonWithCallBack("Skip");
 
+                        var data = skipCallbackButton.Data;
 
-                            var skipCallbackButton = messages.OfType<TLMessage>().GetButtonWithCallBack("Skip");
+                        var messageId = messages.Select(x => x).OfType<TLMessage>().FirstOrDefault(x => x.Message.ToLower().Contains("visit website")).Id;
 
-                            var data = skipCallbackButton.Data;
+                        var res = await _client.SendRequestAsync<object>(
 
-                            var messageId = messages.Select(x => x).OfType<TLMessage>().FirstOrDefault(x => x.Message.ToLower().Contains("visit website")).Id;
+                            new TLRequestGetBotCallbackAnswer()
+                            {
+                                Peer = new TLInputPeerUser() { UserId = botChannel.Id, AccessHash = botChannel.AccessHash.Value },
+                                Data = data,
+                                MsgId = messageId
+                            });
 
-                            var res = await _client.SendRequestAsync<object>(
-                                new TLRequestGetBotCallbackAnswer()
-                                {
-                                    Peer = new TLInputPeerUser() { UserId = botChannel.Id, AccessHash = botChannel.AccessHash.Value },
-                                    Data = data,
-                                    MsgId = messageId
-                                });
-
-                            continue;
-                        }
-
-                        int time = 15;
-                        await Task.Delay(2000);
-                        (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))
-                            .OfType<TLMessage>()
-                            .Where(x => x.Message.Contains("seconds"))
-                            .FirstOrDefault()
-                            .Message
-                            .Split(new char[] { ' ' })
-                            .FirstOrDefault(x => int.TryParse(x, out time));
-
-                        await Task.Delay(time * 1000);
-
-                        await Task.Delay(3000);
-
-                        Console.WriteLine("Всё прошло нормально " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+                        continue;
                     }
-                    catch (NullReferenceException ex)
-                    {
-                        Console.WriteLine("Нет ссылок - запрос на ссылки");
-                        await SendVisitCommand(botChannel); //| означает что выдало два сообщения не тех подряд и среди них не было ссылки
 
+                    int time = 15;
+                    await Task.Delay(2000);
+                    (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))
+                        .OfType<TLMessage>()
+                        .Where(x => x.Message.Contains("seconds"))
+                        .FirstOrDefault()
+                        .Message
+                        .Split(new char[] { ' ' })
+                        .FirstOrDefault(x => int.TryParse(x, out time));
 
-                    }
-                    catch (Exception ex1)
-                    {  //не известное исключение => перезапуск
-                    Console.WriteLine("Неизвестная ошибка");
-                    throw new Exception("FatalError");
-                    }
+                    await Task.Delay(time * 1000);
+
+                    await Task.Delay(3000);
+
+                    Console.WriteLine("Всё прошло нормально " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second);
+                }
+                catch (NullReferenceException)
+                {
+                    Console.WriteLine("Нет ссылок - запрос на ссылки");
+                    await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
+                    await Task.Delay(1000);            //добавили делэй
 
                 }
-                     
-           
+                catch (Exception)                       //не известное исключение => перезапуск
+                {
+                    Console.WriteLine("Неизвестная ошибка");
+                    await SendVisitCommand(botChannel);
+                    await Task.Delay(1000);
+                    throw new Exception("FatalError");
+                }
+
+            }
+
+
         }
     }
 }

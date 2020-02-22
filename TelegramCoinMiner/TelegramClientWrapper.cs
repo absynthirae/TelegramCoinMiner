@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TeleSharp.TL;
 using TLSharp.Core;
 using TeleSharp.TL.Messages;
+using TelegramCoinMiner.Extensions;
 
 namespace TelegramCoinMiner
 {
@@ -35,7 +36,7 @@ namespace TelegramCoinMiner
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
             _browser.LifeSpanHandler = new LifeSpanHandler();
-           
+            _browser.JsDialogHandler = new JSDialogHandler();
         }
 
         private async Task ConnectAsync()
@@ -105,19 +106,15 @@ namespace TelegramCoinMiner
                     await _browser.LoadPageAsync(url);
                     Console.WriteLine("Страница загружена");
 
-
                     if (await _browser.HasDogeclickCapcha())
                     {
                         Console.WriteLine("Капча");
                         await SkipTask(botChannel, messages);
                         continue;
                     }
-
                   
                     _browser.CheckSpecificTaskAndSetHasFocusFunc();
 
-                    //Wait message about task wait time
-                    await Task.Delay(1500);
                     await WaitTaskСompletion(botChannel);
 
                     Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));
@@ -145,7 +142,7 @@ namespace TelegramCoinMiner
         private async Task WaitTaskСompletion(TLUser botChannel)
         {
             int time = await GetTaskWaitTimeInSeconds(botChannel);
-            await Task.Delay(time * 1000);
+            await Task.Delay(time * 1000 + 1000);
         }
 
         /// <summary>
@@ -155,6 +152,8 @@ namespace TelegramCoinMiner
         /// <returns></returns>
         private async Task<int> GetTaskWaitTimeInSeconds(TLUser botChannel)
         {
+            //Wait message about task wait time
+            await Task.Delay(1500);
             //Default time
             int time = 15;
             (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
 
-namespace TelegramCoinMiner
+namespace TelegramCoinMiner.Extensions
 {
     public static class CefSharpExtensions
     {
@@ -28,10 +28,6 @@ namespace TelegramCoinMiner
 
             if (!string.IsNullOrEmpty(address))
             {
-                //browser.EvaluateScriptAsync("window.alert = function() {};");
-                //browser.EvaluateScriptAsync("window.prompt = function() {};");
-               // browser.EvaluateScriptAsync("window.confirm = function() {};");
-
                 browser.Load(address);
             }
             return tcs.Task;
@@ -64,7 +60,8 @@ namespace TelegramCoinMiner
             {
                 
                 Console.WriteLine("Обнаружена специфичная заадча");
-               // browser.EvaluateScriptAsync("document.__proto__.hasFocus = function() {return true}");
+
+                browser.ExecuteScriptAsyncWhenPageLoaded("document.__proto__.hasFocus = function() { return true }");
             }
         }
     }

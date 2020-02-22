@@ -98,6 +98,7 @@
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
+    <Compile Include="JSDialogHandler.cs" />
     <Compile Include="LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

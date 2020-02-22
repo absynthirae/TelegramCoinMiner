@@ -30,7 +30,6 @@ namespace TelegramCoinMiner
             _sessionExist = File.Exists(phone + ".dat");
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
-            
             _browser.LifeSpanHandler = new LifeSpanHandler();
         }
 
@@ -56,27 +55,22 @@ namespace TelegramCoinMiner
 
         public async Task Start()
         {
-            
-                await ConnectAsync();
+            await ConnectAsync();
 
             if (_clientIsConnected)
             {
-
                 IsStarted = true;
 
                 var botChannel = await _client.GetChannelByName(_botInfo.BotName);
             
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
-
                 _workerThread.Start();
-
             }
             else {
                 throw new Exception("Нет подключения");
             }
         }
  
-
         public void Stop()
         {
            
@@ -87,8 +81,6 @@ namespace TelegramCoinMiner
             }
             IsStarted = false;
         }
-
-
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
@@ -102,23 +94,25 @@ namespace TelegramCoinMiner
                     await Task.Delay(2000);
                     Console.WriteLine("-----------------------------------");
                     var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
-                    string url = GetUrlFromTaskMessage(messages);
 
+                    string url = GetUrlFromTaskMessage(messages);
                     Console.WriteLine("URL:" + url);
 
-                    string html = await _browser.GetHtmlAfterPageLoad(url);
+                    await _browser.LoadPageAsync(url);
                     Console.WriteLine("Страница загружена");
 
-                    await Task.Delay(1500);//Wait message about task wait time
+                    //Wait message about task wait time
+                    await Task.Delay(1500);
 
-                    if (html.HasCaptcha())
+                    if (await _browser.HasDogeclickCapcha())
                     {
                         Console.WriteLine("Капча");
                         await SkipTask(botChannel, messages);
                         continue;
                     }
 
-                    
+                    _browser.CheckSpecificTaskAndSetHasFocusFunc();
+
                     await WaitTaskСompletion(botChannel);
 
                     Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));

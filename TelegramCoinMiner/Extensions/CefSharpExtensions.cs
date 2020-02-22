@@ -39,15 +39,24 @@ namespace TelegramCoinMiner
             return html;
         }
 
-        public static bool HasCaptcha(this string html)
+        public async static Task<bool> HasDogeclickCapcha(this ChromiumWebBrowser browser)
         {
-            if (html.ToLower().Contains("captcha"))
+            var html = await browser.GetSourceAsync();
+            if (browser.Address.StartsWith("http://dogeclick.com/") &&
+                (html.Contains("Please solve the reCAPTCHA to continue") || 
+                html.Contains("Please solve the puzzle to continue")))
             {
-               
                 return true;
             }
-           
             return false;
+        }
+
+        public static void CheckSpecificTaskAndSetHasFocusFunc(this ChromiumWebBrowser browser)
+        {
+            if (browser.Address.StartsWith("http://dogeclick.com/"))
+            {
+                browser.ExecuteScriptAsync("document.__proto__.hasFocus = function() {return true}");
+            }
         }
     }
 }

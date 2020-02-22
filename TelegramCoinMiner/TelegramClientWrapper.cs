@@ -11,17 +11,22 @@ namespace TelegramCoinMiner
 {
     public class TelegramClientWrapper
     {
-        private bool _sessionExist = false; // Check of session-file exist
-        private TelegramClient _client; 
-        private Task _workerThread; //  worker
-
-        private ChromiumWebBrowser _browser; 
-        private bool _clientIsConnected = false;
         /// <summary>
         /// farm is started
         /// </summary>
-        public bool IsStarted { get; private set; } = false; 
+        public bool IsStarted { get; private set; } = false;
 
+        /// <summary>
+        /// Check of session-file exist
+        /// </summary>
+        private bool _sessionExist = false;
+        private TelegramClient _client; 
+        /// <summary>
+        /// Worker
+        /// </summary>
+        private Task _workerThread;
+        private ChromiumWebBrowser _browser; 
+        private bool _clientIsConnected = false;
         private CoinClickBotInfo _botInfo = CoinClickBotInfo.CreateBitcoinClickBotInfo();
 
         public TelegramClientWrapper(int apiId, string apiHash, string phone, ChromiumWebBrowser browser)
@@ -89,9 +94,10 @@ namespace TelegramCoinMiner
             {
                 try
                 {
+                    Console.WriteLine("-----------------------------------");
+
                     //Wait task message
                     await Task.Delay(2000);
-                    Console.WriteLine("-----------------------------------");
                     var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
 
                     string url = GetUrlFromTaskMessage(messages);
@@ -100,8 +106,6 @@ namespace TelegramCoinMiner
                     await _browser.LoadPageAsync(url);
                     Console.WriteLine("Страница загружена");
 
-                    //Wait message about task wait time
-                    await Task.Delay(1500);
 
                     if (await _browser.HasDogeclickCapcha())
                     {
@@ -112,6 +116,8 @@ namespace TelegramCoinMiner
 
                     _browser.CheckSpecificTaskAndSetHasFocusFunc();
 
+                    //Wait message about task wait time
+                    await Task.Delay(1500);
                     await WaitTaskСompletion(botChannel);
 
                     Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));
@@ -120,14 +126,18 @@ namespace TelegramCoinMiner
                 {
                     Console.WriteLine("Нет ссылок => запрос на ссылки");
                     await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
-                    await Task.Delay(1000);                
                 }
             }
         }
 
+        /// <summary>
+        /// Send message "/visit" in telegram chat
+        /// </summary>
+        /// <param name="channel">Bot channel</param>
+        /// <returns></returns>
         private async Task SendVisitCommand(TLUser channel)
         {
-            await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit"); //стартуем бот-канал с той стороны
+            await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit");
         }
 
         private async Task WaitTaskСompletion(TLUser botChannel)

@@ -43,8 +43,10 @@ namespace TelegramCoinMiner
         {
             if (html.ToLower().Contains("captcha"))
             {
+               
                 return true;
             }
+           
             return false;
         }
     }

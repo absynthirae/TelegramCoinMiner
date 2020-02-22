@@ -36,61 +36,64 @@ namespace TelegramCoinMiner
 
         private async Task ConnectAsync()
         {
-            await _client.ConnectAsync();
+            try
+            {
+                await _client.ConnectAsync();
+                _clientIsConnected = true;
+            }
+            catch{
+                _clientIsConnected = false;
+                Console.WriteLine("Не удалось произвести подключние");
+            }
 
             if (!_sessionExist)
             {
                 throw new Exception("Session not exist");
             }
+
+
         }
 
         public async Task Start()
         {
-            try
-            {
+            
                 await ConnectAsync();
-                _clientIsConnected = true;
-            }
-            catch (Exception) { 
-                _clientIsConnected = false; 
-            }
 
             if (_clientIsConnected)
             {
+
                 IsStarted = true;
+
                 var botChannel = await _client.GetChannelByName(_botInfo.BotName);
-                //await SendVisitCommand(botChannel);
-                //await Task.Delay(2000);
+            
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
-                try
-                {
-                    _workerThread.Start();
-                }
-                catch
-                {
-                    Console.WriteLine("После неизвестной ошибки проект перезапускается");
-                    await Start();
-                }
+
+                _workerThread.Start();
+
             }
-            else
-            {
-                throw new Exception("Коннект провален");
+            else {
+                throw new Exception("Нет подключения");
             }
         }
+ 
 
         public void Stop()
         {
-            IsStarted = false;
+           
             if (_workerThread != null)
             {
                 _workerThread.Wait();
                 _workerThread = null;
             }
+            IsStarted = false;
         }
+
+
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
             await SendVisitCommand(botChannel);
+
             while (IsStarted)
             {
                 try
@@ -105,6 +108,9 @@ namespace TelegramCoinMiner
 
                     string html = await _browser.GetHtmlAfterPageLoad(url);
                     Console.WriteLine("Страница загружена");
+
+                    await Task.Delay(1500);//Wait message about task wait time
+
                     if (html.HasCaptcha())
                     {
                         Console.WriteLine("Капча");
@@ -112,23 +118,16 @@ namespace TelegramCoinMiner
                         continue;
                     }
 
-                    //Wait message about task wait time
-                    await Task.Delay(2000);
-
+                    
                     await WaitTaskСompletion(botChannel);
 
                     Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));
                 }
                 catch (NullReferenceException)
                 {
-                    Console.WriteLine("Нет ссылок - запрос на ссылки");
+                    Console.WriteLine("Нет ссылок => запрос на ссылки");
                     await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
-                }
-                catch (Exception)                       //не известное исключение => перезапуск
-                {
-                    Console.WriteLine("Неизвестная ошибка");
-                    await SendVisitCommand(botChannel);
-                    throw new Exception("FatalError");
+                    await Task.Delay(1000);                
                 }
             }
         }

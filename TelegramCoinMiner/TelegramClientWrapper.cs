@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TeleSharp.TL;
 using TLSharp.Core;
-using CefSharp;
 using TeleSharp.TL.Messages;
 
 namespace TelegramCoinMiner
@@ -40,7 +39,8 @@ namespace TelegramCoinMiner
                 await _client.ConnectAsync();
                 _clientIsConnected = true;
             }
-            catch{
+            catch
+            {
                 _clientIsConnected = false;
                 Console.WriteLine("Не удалось произвести подключние");
             }
@@ -49,8 +49,6 @@ namespace TelegramCoinMiner
             {
                 throw new Exception("Session not exist");
             }
-
-
         }
 
         public async Task Start()
@@ -66,7 +64,8 @@ namespace TelegramCoinMiner
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
                 _workerThread.Start();
             }
-            else {
+            else 
+            {
                 throw new Exception("Нет подключения");
             }
         }

@@ -35,6 +35,7 @@ namespace TelegramCoinMiner
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
             _browser.LifeSpanHandler = new LifeSpanHandler();
+           
         }
 
         private async Task ConnectAsync()
@@ -88,16 +89,14 @@ namespace TelegramCoinMiner
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
+           
             await SendVisitCommand(botChannel);
 
             while (IsStarted)
             {
                 try
                 {
-                    Console.WriteLine("-----------------------------------");
-
-                    //Wait task message
-                    await Task.Delay(2000);
+                    Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
                     var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
 
                     string url = GetUrlFromTaskMessage(messages);
@@ -114,6 +113,7 @@ namespace TelegramCoinMiner
                         continue;
                     }
 
+                  
                     _browser.CheckSpecificTaskAndSetHasFocusFunc();
 
                     //Wait message about task wait time
@@ -138,6 +138,8 @@ namespace TelegramCoinMiner
         private async Task SendVisitCommand(TLUser channel)
         {
             await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit");
+            //Wait task message
+            await Task.Delay(2000);
         }
 
         private async Task WaitTaskСompletion(TLUser botChannel)

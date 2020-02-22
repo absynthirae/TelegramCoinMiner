@@ -9,6 +9,7 @@ namespace TelegramCoinMiner
     {
         public static Task LoadPageAsync(this ChromiumWebBrowser browser, string address = null)
         {
+            
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             EventHandler<LoadingStateChangedEventArgs> handler = null;
@@ -27,6 +28,10 @@ namespace TelegramCoinMiner
 
             if (!string.IsNullOrEmpty(address))
             {
+                //browser.EvaluateScriptAsync("window.alert = function() {};");
+                //browser.EvaluateScriptAsync("window.prompt = function() {};");
+               // browser.EvaluateScriptAsync("window.confirm = function() {};");
+
                 browser.Load(address);
             }
             return tcs.Task;
@@ -44,7 +49,8 @@ namespace TelegramCoinMiner
             var html = await browser.GetSourceAsync();
             if (browser.Address.StartsWith("http://dogeclick.com/") &&
                 (html.Contains("Please solve the reCAPTCHA to continue") || 
-                html.Contains("Please solve the puzzle to continue")))
+                html.Contains("Please solve the puzzle to continue"))
+                )
             {
                 return true;
             }
@@ -53,9 +59,11 @@ namespace TelegramCoinMiner
 
         public static void CheckSpecificTaskAndSetHasFocusFunc(this ChromiumWebBrowser browser)
         {
+            
             if (browser.Address.StartsWith("http://dogeclick.com/"))
             {
-                browser.ExecuteScriptAsync("document.__proto__.hasFocus = function() {return true}");
+                Console.WriteLine("Обнаружена специфичная заадча");
+               // browser.EvaluateScriptAsync("document.__proto__.hasFocus = function() {return true}");
             }
         }
     }

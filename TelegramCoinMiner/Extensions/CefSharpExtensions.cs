@@ -62,6 +62,7 @@ namespace TelegramCoinMiner
             
             if (browser.Address.StartsWith("http://dogeclick.com/"))
             {
+                
                 Console.WriteLine("Обнаружена специфичная заадча");
                // browser.EvaluateScriptAsync("document.__proto__.hasFocus = function() {return true}");
             }

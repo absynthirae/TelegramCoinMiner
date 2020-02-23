@@ -43,6 +43,8 @@ namespace TelegramCoinMiner.Extensions
         public async static Task<bool> HasDogeclickCapcha(this ChromiumWebBrowser browser)
         {
             var html = await browser.GetSourceAsync();
+            Console.WriteLine("Получена HTML");
+
             if (browser.Address.StartsWith("http://dogeclick.com/") &&
                 (html.Contains("Please solve the reCAPTCHA to continue") || 
                 html.Contains("Please solve the puzzle to continue"))
@@ -61,7 +63,7 @@ namespace TelegramCoinMiner.Extensions
                 
                 Console.WriteLine("Обнаружена специфичная заадча");
 
-                browser.ExecuteScriptAsyncWhenPageLoaded("document.__proto__.hasFocus = function() { return true }");
+                browser.GetMainFrame().ExecuteJavaScriptAsync("document.__proto__.hasFocus = function() { return true }");
             }
         }
     }

@@ -94,6 +94,7 @@
     <Compile Include="BotsControllerForm.Designer.cs">
       <DependentUpon>BotsControllerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DefaultRequestHandler.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />

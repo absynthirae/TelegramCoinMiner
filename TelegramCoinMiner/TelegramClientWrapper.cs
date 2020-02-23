@@ -37,6 +37,7 @@ namespace TelegramCoinMiner
             _browser = browser;
             _browser.LifeSpanHandler = new LifeSpanHandler();
             _browser.JsDialogHandler = new JSDialogHandler();
+          //  _browser.RequestHandler = new DefaultRequestHandler();
         }
 
         private async Task ConnectAsync()
@@ -103,7 +104,14 @@ namespace TelegramCoinMiner
                     string url = GetUrlFromTaskMessage(messages);
                     Console.WriteLine("URL:" + url);
 
-                    await _browser.LoadPageAsync(url);
+                    if (!_browser.LoadPageAsync(url).Wait(60000))
+                    {
+                        Console.WriteLine("Подозрение на DDos => пропуск");
+                        await SkipTask(botChannel, messages);          
+                        continue;
+                    }
+
+
                     Console.WriteLine("Страница загружена");
 
                     if (await _browser.HasDogeclickCapcha())
@@ -112,8 +120,19 @@ namespace TelegramCoinMiner
                         await SkipTask(botChannel, messages);
                         continue;
                     }
-                  
-                    _browser.CheckSpecificTaskAndSetHasFocusFunc();
+                    else 
+                    {
+                        Console.WriteLine("Нет капчи"); 
+                    }
+
+
+                    if (!Task.Run(()=>_browser.CheckSpecificTaskAndSetHasFocusFunc()).Wait(60000)) 
+                    {
+                        Console.WriteLine("Подозрение на DDos => пропуск");
+                        await SkipTask(botChannel, messages);
+                        continue;
+                    };
+
 
                     await WaitTaskСompletion(botChannel);
 
@@ -123,6 +142,9 @@ namespace TelegramCoinMiner
                 {
                     Console.WriteLine("Нет ссылок => запрос на ссылки");
                     await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
+                }
+                catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -142,6 +164,7 @@ namespace TelegramCoinMiner
         private async Task WaitTaskСompletion(TLUser botChannel)
         {
             int time = await GetTaskWaitTimeInSeconds(botChannel);
+            Console.WriteLine("Время ожидания: "+time);
             await Task.Delay(time * 1000 + 1000);
         }
 

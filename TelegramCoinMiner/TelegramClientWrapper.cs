@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TeleSharp.TL;
 using TLSharp.Core;
 using TeleSharp.TL.Messages;
+using TelegramCoinMiner.Extensions;
 
 namespace TelegramCoinMiner
 {
@@ -35,6 +36,8 @@ namespace TelegramCoinMiner
             _client = new TelegramClient(apiId, apiHash, sessionUserId: phone);
             _browser = browser;
             _browser.LifeSpanHandler = new LifeSpanHandler();
+            _browser.JsDialogHandler = new JSDialogHandler();
+          //  _browser.RequestHandler = new DefaultRequestHandler();
         }
 
         private async Task ConnectAsync()
@@ -88,24 +91,28 @@ namespace TelegramCoinMiner
 
         private async Task InvokeAlgoritm(TLUser botChannel)
         {
+           
             await SendVisitCommand(botChannel);
 
             while (IsStarted)
             {
                 try
                 {
-                    Console.WriteLine("-----------------------------------");
-
-                    //Wait task message
-                    await Task.Delay(2000);
+                    Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
                     var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
 
                     string url = GetUrlFromTaskMessage(messages);
                     Console.WriteLine("URL:" + url);
 
-                    await _browser.LoadPageAsync(url);
-                    Console.WriteLine("Страница загружена");
+                    if (!_browser.LoadPageAsync(url).Wait(60000))
+                    {
+                        Console.WriteLine("Подозрение на DDos => пропуск");
+                        await SkipTask(botChannel, messages);          
+                        continue;
+                    }
 
+
+                    Console.WriteLine("Страница загружена");
 
                     if (await _browser.HasDogeclickCapcha())
                     {
@@ -113,11 +120,20 @@ namespace TelegramCoinMiner
                         await SkipTask(botChannel, messages);
                         continue;
                     }
+                    else 
+                    {
+                        Console.WriteLine("Нет капчи"); 
+                    }
 
-                    _browser.CheckSpecificTaskAndSetHasFocusFunc();
 
-                    //Wait message about task wait time
-                    await Task.Delay(1500);
+                    if (!Task.Run(()=>_browser.CheckSpecificTaskAndSetHasFocusFunc()).Wait(60000)) 
+                    {
+                        Console.WriteLine("Подозрение на DDos => пропуск");
+                        await SkipTask(botChannel, messages);
+                        continue;
+                    };
+
+
                     await WaitTaskСompletion(botChannel);
 
                     Console.WriteLine("Задание выполнено " + DateTime.Now.ToString("hh:mm:ss"));
@@ -126,6 +142,9 @@ namespace TelegramCoinMiner
                 {
                     Console.WriteLine("Нет ссылок => запрос на ссылки");
                     await SendVisitCommand(botChannel); //означает что выдало два сообщения не тех подряд и среди них не было ссылки
+                }
+                catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -138,12 +157,15 @@ namespace TelegramCoinMiner
         private async Task SendVisitCommand(TLUser channel)
         {
             await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit");
+            //Wait task message
+            await Task.Delay(2000);
         }
 
         private async Task WaitTaskСompletion(TLUser botChannel)
         {
             int time = await GetTaskWaitTimeInSeconds(botChannel);
-            await Task.Delay(time * 1000);
+            Console.WriteLine("Время ожидания: "+time);
+            await Task.Delay(time * 1000 + 1000);
         }
 
         /// <summary>
@@ -153,6 +175,8 @@ namespace TelegramCoinMiner
         /// <returns></returns>
         private async Task<int> GetTaskWaitTimeInSeconds(TLUser botChannel)
         {
+            //Wait message about task wait time
+            await Task.Delay(1500);
             //Default time
             int time = 15;
             (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))

@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
 
-namespace TelegramCoinMiner
+namespace TelegramCoinMiner.Extensions
 {
     public static class CefSharpExtensions
     {
         public static Task LoadPageAsync(this ChromiumWebBrowser browser, string address = null)
         {
+            
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             EventHandler<LoadingStateChangedEventArgs> handler = null;
@@ -42,9 +43,12 @@ namespace TelegramCoinMiner
         public async static Task<bool> HasDogeclickCapcha(this ChromiumWebBrowser browser)
         {
             var html = await browser.GetSourceAsync();
+            Console.WriteLine("Получена HTML");
+
             if (browser.Address.StartsWith("http://dogeclick.com/") &&
                 (html.Contains("Please solve the reCAPTCHA to continue") || 
-                html.Contains("Please solve the puzzle to continue")))
+                html.Contains("Please solve the puzzle to continue"))
+                )
             {
                 return true;
             }
@@ -53,9 +57,13 @@ namespace TelegramCoinMiner
 
         public static void CheckSpecificTaskAndSetHasFocusFunc(this ChromiumWebBrowser browser)
         {
+            
             if (browser.Address.StartsWith("http://dogeclick.com/"))
             {
-                browser.ExecuteScriptAsync("document.__proto__.hasFocus = function() {return true}");
+                
+                Console.WriteLine("Обнаружена специфичная заадча");
+
+                browser.GetMainFrame().ExecuteJavaScriptAsync("document.__proto__.hasFocus = function() { return true }");
             }
         }
     }

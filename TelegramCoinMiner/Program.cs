@@ -23,7 +23,7 @@ namespace TelegramCoinMiner
 
             Console.WriteLine("Enter phone number as +71234567890");
 
-            string phone = Console.ReadLine();           
+            string phone = Console.ReadLine();
 
             TelegramClientWrapper telegramClient = new TelegramClientWrapper(apiId, apiHash, phone, wrapper._browser);
 

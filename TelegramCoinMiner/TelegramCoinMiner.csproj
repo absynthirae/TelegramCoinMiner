@@ -96,7 +96,9 @@
     </Compile>
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\Params\SendVisitParams.cs" />
+    <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />
     <Compile Include="Commands\SendVisitCommand.cs" />
+    <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
     <Compile Include="DefaultRequestHandler.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />

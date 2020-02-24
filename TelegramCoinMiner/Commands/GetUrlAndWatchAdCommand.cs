@@ -15,7 +15,7 @@ namespace TelegramCoinMiner.Commands
         {
             Params = commandParams;
         }
-        //Press the "Visit website" button to earn
+        
         public async Task Execute()
         {
             Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));

@@ -112,7 +112,7 @@ namespace TelegramCoinMiner.Extensions
             var absButtons = new List<TLAbsKeyboardButton>();
             foreach (var buttons in keyboardLinesButtons)
             {
-                absButtons.AddRange(buttons);
+                    absButtons.AddRange(buttons);
             }
 
             //ищем кнопку для перехода по ссылке

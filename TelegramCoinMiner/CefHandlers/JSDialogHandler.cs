@@ -1,6 +1,6 @@
 ﻿using CefSharp;
 
-namespace TelegramCoinMiner.Cef.Handlers
+namespace TelegramCoinMiner.CefHandlers
 {
     class JSDialogHandler : IJsDialogHandler
     {

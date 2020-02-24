@@ -98,6 +98,7 @@ namespace TelegramCoinMiner
             {
                 try
                 {
+                    #region GetUrlAndWatchAdCommand
                     Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
                     var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
 
@@ -132,7 +133,7 @@ namespace TelegramCoinMiner
                         await SkipTask(botChannel, messages);
                         continue;
                     };
-
+                    #endregion
 
                     await WaitTaskСompletion(botChannel);
 

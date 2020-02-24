@@ -94,7 +94,9 @@
     <Compile Include="BotsControllerForm.Designer.cs">
       <DependentUpon>BotsControllerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Commands\GetUrlAndWatchAdCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\Params\GetUrlAndWatchAdParams.cs" />
     <Compile Include="Commands\Params\SendVisitParams.cs" />
     <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />
     <Compile Include="Commands\SendVisitCommand.cs" />

@@ -69,7 +69,7 @@ namespace TelegramCoinMiner
             {
                 IsStarted = true;
                 TLFound found = await _client.SearchUserAsync(_botInfo.BotName);
-                var botChannel = found.Chats.OfType<TLChannel>().FirstOrDefault(x => x.Username == _botInfo.BotName);
+                var botChannel = found.Chats.OfType<TLChannel>().FirstOrDefault(x => x.Username == _botInfo.BotName || x.Title == _botInfo.BotName);
             
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
                 _workerThread.Start();

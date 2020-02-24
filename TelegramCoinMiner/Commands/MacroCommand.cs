@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace TelegramCoinMiner.Commands
 {
-    public class MacroCommand : ICommand
+    public class MacroCommand : IAsyncCommand
     {
-        private List<ICommand> commands;
+        private List<IAsyncCommand> commands;
 
-        public MacroCommand(List<ICommand> commands)
+        public MacroCommand(List<IAsyncCommand> commands)
         {
             this.commands = commands;
         }
 
         public void Execute()
         {
-            foreach (ICommand c in commands)
+            foreach (IAsyncCommand c in commands)
                 c.Execute();
         }
     }

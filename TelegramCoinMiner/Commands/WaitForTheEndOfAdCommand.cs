@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramCoinMiner.Commands
 {
-    public class WaitForTheEndOfAdCommand : ICommand
+    public class WaitForTheEndOfAdCommand : IAsyncCommand
     {
         public void Execute()
         {

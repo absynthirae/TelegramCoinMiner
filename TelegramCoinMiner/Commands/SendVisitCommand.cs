@@ -2,7 +2,7 @@
 
 namespace TelegramCoinMiner.Commands
 {
-    public class SendVisitCommand : ICommand
+    public class SendVisitCommand : IAsyncCommand
     {
         public SendVisitParams Params { get; set; }
 

@@ -22,7 +22,7 @@ namespace TelegramCoinMiner.Extensions
             return messagesSlice.Messages;
         }
 
-        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, TLUser channel, int count)
+        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, TLChannel channel, int count)
         {
             return await client.GetMessages(channel.AccessHash.Value, channel.Id, count);
         }
@@ -50,9 +50,31 @@ namespace TelegramCoinMiner.Extensions
                 .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
             
             return button;
-            
         }
 
+        public static TLKeyboardButtonUrl GetButtonWithUrl(this TLMessage message, string searchText)
+        {
+            var markup = message.ReplyMarkup as TLReplyInlineMarkup;
+            
+            if (markup == null)
+                return null;
+
+            var keyboardLinesButtons = markup.Rows.Select(row => row.Buttons); //берем все кнопки из строк
+
+            //преобразовываем список списков в одномерный список
+            var absButtons = new List<TLAbsKeyboardButton>();
+            foreach (var buttons in keyboardLinesButtons)
+            {
+                absButtons.AddRange(buttons);
+            }
+            
+            //ищем кнопку для перехода по ссылке
+            var button = absButtons
+                .OfType<TLKeyboardButtonUrl>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
+
+            return button;
+        }
 
         public static TLKeyboardButtonCallback GetButtonWithCallBack(this IEnumerable<TLMessage> messages, string searchText)
         {
@@ -69,6 +91,28 @@ namespace TelegramCoinMiner.Extensions
                 {
                     absButtons.AddRange(buttons);
                 }
+            }
+
+            //ищем кнопку для перехода по ссылке
+            var button = absButtons
+                .OfType<TLKeyboardButtonCallback>()
+                .FirstOrDefault(x => x.Text.ToLower().Contains(searchText.ToLower()));
+
+            return button;
+        }
+
+        public static TLKeyboardButtonCallback GetButtonWithCallBack(this TLMessage message, string searchText)
+        {
+            var markup = message.ReplyMarkup;
+            var inlineMarkup = markup as TLReplyInlineMarkup;
+
+            var keyboardLinesButtons = inlineMarkup.Rows.Select(row => row.Buttons); //берем все кнопки из строк
+
+            //преобразовываем список списков в одномерный список
+            var absButtons = new List<TLAbsKeyboardButton>();
+            foreach (var buttons in keyboardLinesButtons)
+            {
+                absButtons.AddRange(buttons);
             }
 
             //ищем кнопку для перехода по ссылке

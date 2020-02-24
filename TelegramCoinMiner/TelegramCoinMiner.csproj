@@ -96,7 +96,7 @@
     </Compile>
     <Compile Include="Commands\MacroCommand.cs" />
     <Compile Include="Commands\GetUrlAndWatchAdCommand.cs" />
-    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\IAsyncCommand.cs" />
     <Compile Include="Commands\Params\GetUrlAndWatchAdParams.cs" />
     <Compile Include="Commands\Params\SendVisitParams.cs" />
     <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />

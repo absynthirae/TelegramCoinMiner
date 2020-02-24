@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TelegramCoinMiner.Commands
 {
-    public interface ICommand
+    public interface IAsyncCommand
     {
-        void Execute();
+        Task Execute();
     }
 }

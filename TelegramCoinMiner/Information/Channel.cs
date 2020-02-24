@@ -16,7 +16,7 @@ namespace TelegramCoinMiner.Information
         public Channel() { 
         
         }
-        public Channel(string VisitWord="/visit", string SkipWord = "/skip", string GoWord="go to website" )
+        public Channel(string VisitWord="/visit", string skipWord = "/skip", string goWord="go to website" )
         {
             this.visitWord = VisitWord;
             this.gkipWord = SkipWord;

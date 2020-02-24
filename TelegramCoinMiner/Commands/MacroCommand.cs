@@ -15,10 +15,10 @@ namespace TelegramCoinMiner.Commands
             this.commands = commands;
         }
 
-        public void Execute()
+        public async Task Execute()
         {
             foreach (IAsyncCommand c in commands)
-                c.Execute();
+                await c.Execute();
         }
     }
 }

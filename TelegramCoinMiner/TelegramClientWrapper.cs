@@ -7,6 +7,7 @@ using TeleSharp.TL;
 using TLSharp.Core;
 using TeleSharp.TL.Messages;
 using TelegramCoinMiner.Extensions;
+using TelegramCoinMiner.Cef.Handlers;
 
 namespace TelegramCoinMiner
 {

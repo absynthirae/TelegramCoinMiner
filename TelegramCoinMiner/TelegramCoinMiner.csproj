@@ -102,13 +102,12 @@
     <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />
     <Compile Include="Commands\SendVisitCommand.cs" />
     <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
-    <Compile Include="DefaultRequestHandler.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
-    <Compile Include="JSDialogHandler.cs" />
-    <Compile Include="LifeSpanHandler.cs" />
+    <Compile Include="Cef\Handlers\JSDialogHandler.cs" />
+    <Compile Include="Cef\Handlers\LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TLSharpExtensions.cs" />

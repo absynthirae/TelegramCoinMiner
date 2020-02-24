@@ -94,6 +94,7 @@
     <Compile Include="BotsControllerForm.Designer.cs">
       <DependentUpon>BotsControllerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Commands\MacroCommand.cs" />
     <Compile Include="Commands\GetUrlAndWatchAdCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\Params\GetUrlAndWatchAdParams.cs" />

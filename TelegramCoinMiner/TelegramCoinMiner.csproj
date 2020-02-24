@@ -107,6 +107,8 @@
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="CoinClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
+    <Compile Include="Information\Channel.cs" />
+    <Compile Include="Information\InfoCreator.cs" />
     <Compile Include="JSDialogHandler.cs" />
     <Compile Include="LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />

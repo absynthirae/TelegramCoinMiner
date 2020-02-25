@@ -3,16 +3,14 @@
     public class ClickBotInfo
     {
         public string BotName { get; set; }
-        public int ReadMessagesCount { get; set; }
-
         public string Title { get; set; }
+
         public static ClickBotInfo CreateBitcoinClickBotInfo()
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.nameBitcoin, 
-                ReadMessagesCount = Constants.readMessageCount, 
-                Title = Constants.titleBitcoin 
+                BotName = Constants.NameBitcoin, 
+                Title = Constants.TitleBitcoin 
             };
             
         }
@@ -21,9 +19,8 @@
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.titleBchcoin, 
-                ReadMessagesCount = Constants.readMessageCount, 
-                Title= Constants.titleBchcoin 
+                BotName = Constants.TitleBch, 
+                Title= Constants.TitleBch 
             };
         }
 
@@ -31,9 +28,8 @@
         {
             return new ClickBotInfo 
             {
-                BotName = Constants.titleDogecoin, 
-                ReadMessagesCount = Constants.readMessageCount, 
-                Title = Constants.titleDogecoin
+                BotName = Constants.TitleDogecoin, 
+                Title = Constants.TitleDogecoin
             };
         }
 
@@ -41,9 +37,8 @@
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.nameZcushcoin, 
-                ReadMessagesCount = Constants.readMessageCount, 
-                Title = Constants.titleZcushcoin 
+                BotName = Constants.NameZcash, 
+                Title = Constants.TitleZcash 
             };
         }
 
@@ -51,9 +46,8 @@
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.nameLitecoin,
-                ReadMessagesCount = Constants.readMessageCount,
-                Title = Constants.titleLitecoin 
+                BotName = Constants.NameLitecoin,
+                Title = Constants.TitleLitecoin 
             };
         }
     }

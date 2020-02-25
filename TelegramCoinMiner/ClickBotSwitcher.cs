@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TelegramCoinMiner
 {
@@ -10,9 +6,9 @@ namespace TelegramCoinMiner
     {
         List<ClickBotInfo> listOfBots = new List<ClickBotInfo>()
         {
-         ClickBotInfo.CreateDogecoinClickBotInfo(),
-         ClickBotInfo.CreateZcashClickBotInfo(),
-         ClickBotInfo.CreateLitecoinClickBotInfo()
+             ClickBotInfo.CreateDogecoinClickBotInfo(),
+             ClickBotInfo.CreateZcashClickBotInfo(),
+             ClickBotInfo.CreateLitecoinClickBotInfo()
         };
 
         int _currentNumber = 0;

@@ -102,7 +102,7 @@ namespace TelegramCoinMiner
                 {
                     #region GetUrlAndWatchAdCommand
                     Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
-                    var messages = await _client.GetMessages(botChannel, _botInfo.ReadMessagesCount);
+                    var messages = await _client.GetMessages(botChannel, Constants.ReadMessagesCount);
 
                     string url = GetUrlFromTaskMessage(messages);
                     Console.WriteLine("URL:" + url);
@@ -182,7 +182,7 @@ namespace TelegramCoinMiner
             await Task.Delay(1500);
             //Default time
             int time = 15;
-            (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, _botInfo.ReadMessagesCount))
+            (await _client.GetMessages(botChannel.AccessHash.Value, botChannel.Id, Constants.ReadMessagesCount))
                 .OfType<TLMessage>()
                 .Where(x => x.Message.Contains("seconds"))
                 .FirstOrDefault()

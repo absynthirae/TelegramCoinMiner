@@ -27,7 +27,7 @@ namespace TelegramCoinMiner.Commands
             await Task.Delay(1500);
             //Default time
             int time = 15;
-            (await Params.TelegramClient.GetMessages(Params.Channel, Params.BotInfo.ReadMessagesCount))
+            (await Params.TelegramClient.GetMessages(Params.Channel, Constants.ReadMessagesCount))
                 .OfType<TLMessage>()
                 .Where(x => x.Message.Contains("seconds"))
                 .FirstOrDefault()

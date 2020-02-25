@@ -19,7 +19,7 @@ namespace TelegramCoinMiner.Commands
         public async Task Execute()
         {
             Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
-            var messages = await Params.TelegramClient.GetMessages(Params.BotChannel, Params.BotInfo.ReadMessagesCount);
+            var messages = await Params.TelegramClient.GetMessages(Params.BotChannel, Constants.ReadMessagesCount);
 
             var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
             var goToWebsiteButton = adMessage.GetButtonWithUrl("go to website");

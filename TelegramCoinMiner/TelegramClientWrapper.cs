@@ -30,7 +30,7 @@ namespace TelegramCoinMiner
         private Task _workerThread;
         private ChromiumWebBrowser _browser; 
         private bool _clientIsConnected = false;
-        private CoinClickBotInfo _botInfo = CoinClickBotInfo.CreateBitcoinClickBotInfo();
+        private ClickBotInfo _botInfo = ClickBotInfo.CreateBitcoinClickBotInfo();
 
         public TelegramClientWrapper(int apiId, string apiHash, string phone, ChromiumWebBrowser browser)
         {

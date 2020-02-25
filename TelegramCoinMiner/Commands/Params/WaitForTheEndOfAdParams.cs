@@ -7,6 +7,6 @@ namespace TelegramCoinMiner.Commands.Params
     {
         public TelegramClient TelegramClient { get; set; }
         public TLUser Channel { get; set; }
-        public CoinClickBotInfo BotInfo { get; set; }
+        public ClickBotInfo BotInfo { get; set; }
     }
 }

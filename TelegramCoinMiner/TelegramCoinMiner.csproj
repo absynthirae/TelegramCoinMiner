@@ -107,7 +107,7 @@
     <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
-    <Compile Include="CoinClickBotInfo.cs" />
+    <Compile Include="ClickBotInfo.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="CefHandlers\JSDialogHandler.cs" />
     <Compile Include="CefHandlers\LifeSpanHandler.cs" />

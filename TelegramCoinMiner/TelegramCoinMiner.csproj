@@ -95,6 +95,7 @@
       <DependentUpon>BotsControllerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ClickBotSwitcher.cs" />
+    <Compile Include="ClickBotWorkerPool.cs" />
     <Compile Include="Commands\MacroCommand.cs" />
     <Compile Include="Commands\GetUrlAndWatchAdCommand.cs" />
     <Compile Include="Commands\IAsyncCommand.cs" />

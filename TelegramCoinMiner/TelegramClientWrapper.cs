@@ -69,7 +69,7 @@ namespace TelegramCoinMiner
             {
                 IsStarted = true;
                 TLFound found = await _client.SearchUserAsync(_botInfo.BotName);
-                var botChannel = found.Chats.OfType<TLChannel>().FirstOrDefault(x => x.Username == _botInfo.BotName || x.Title == _botInfo.BotName);
+                var botChannel = found.Chats.OfType<TLUser>().FirstOrDefault(x => x.FirstName == _botInfo.BotName);
             
                 _workerThread = new Task(() => InvokeAlgoritm(botChannel)); //возможно надо счётчик сообщений в параметры пихнуть
                 _workerThread.Start();
@@ -91,7 +91,7 @@ namespace TelegramCoinMiner
             IsStarted = false;
         }
 
-        private async Task InvokeAlgoritm(TLChannel botChannel)
+        private async Task InvokeAlgoritm(TLUser botChannel)
         {
            
             await SendVisitCommand(botChannel);
@@ -157,14 +157,14 @@ namespace TelegramCoinMiner
         /// </summary>
         /// <param name="channel">Bot channel</param>
         /// <returns></returns>
-        private async Task SendVisitCommand(TLChannel channel)
+        private async Task SendVisitCommand(TLUser channel)
         {
             await _client.SendMessageAsync(new TLInputPeerUser() { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, "/visit");
             //Wait task message
             await Task.Delay(2000);
         }
 
-        private async Task WaitTaskСompletion(TLChannel botChannel)
+        private async Task WaitTaskСompletion(TLUser botChannel)
         {
             int time = await GetTaskWaitTimeInSeconds(botChannel);
             Console.WriteLine("Время ожидания: "+time);
@@ -176,7 +176,7 @@ namespace TelegramCoinMiner
         /// </summary>
         /// <param name="botChannel"></param>
         /// <returns></returns>
-        private async Task<int> GetTaskWaitTimeInSeconds(TLChannel botChannel)
+        private async Task<int> GetTaskWaitTimeInSeconds(TLUser botChannel)
         {
             //Wait message about task wait time
             await Task.Delay(1500);
@@ -192,7 +192,7 @@ namespace TelegramCoinMiner
             return time;
         }
 
-        private async Task SkipTask(TLChannel botChannel, TLVector<TLAbsMessage> messages)
+        private async Task SkipTask(TLUser botChannel, TLVector<TLAbsMessage> messages)
         {
             var skipCallbackButton = messages.OfType<TLMessage>().GetButtonWithCallBack("Skip");
             var data = skipCallbackButton.Data;

@@ -88,12 +88,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BotsControllerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BotsControllerForm.Designer.cs">
-      <DependentUpon>BotsControllerForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="ClickBotSwitcher.cs" />
     <Compile Include="ClickBotWorkerPool.cs" />
     <Compile Include="Commands\MacroCommand.cs" />

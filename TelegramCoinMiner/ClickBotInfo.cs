@@ -8,6 +8,7 @@
         public static ClickBotInfo CreateBitcoinClickBotInfo()
         {
             return new ClickBotInfo { BotName = "BTC Click Bot" , ReadMessagesCount = 2 };
+            
         }
         
         public static ClickBotInfo CreateBitcoinCashClickBotInfo()

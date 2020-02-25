@@ -9,21 +9,21 @@ namespace TelegramCoinMiner
     public static class Constants
     {
 
-        const int browserLoadTimeOut = 60000;
-        const int readMessageCount = 2;
-        const int standartTimeDelay = 1500;
+        static int browserLoadTimeOut => 60000;
+        static int readMessageCount => 2;
+        static int standartTimeDelay => 1500;
 
-        const string nameDogecoin = "@Dogecoin_click_bot";
-        const string nameLitecoin = "@Litecoin_click_bot";
-        const string nameBchcoin  = "@BCH_clickbot";
-        const string nameScushcoin = "@Zcash_click_bot";
-        const string nameBitcoin  = "@BitcoinClick_bot";
+        static string nameDogecoin => "@Dogecoin_click_bot";
+        static string nameLitecoin => "@Litecoin_click_bot";
+        static string nameBchcoin  => "@BCH_clickbot";
+        static string nameScushcoin => "@Zcash_click_bot";
+        static string nameBitcoin  => "@BitcoinClick_bot";
 
-        const string titleDogecoin = "DOGE Click Bot";
-        const string titleLitecoin = "LTC Click Bot";
-        const string titleBchcoin = "BCH Click Bot";
-        const string titleScushcoin = "ZEC Click Bot";
-        const string titleBitcoin = "BTC Click Bot";
+        static string titleDogecoin => "DOGE Click Bot";
+        static string titleLitecoin => "LTC Click Bot";
+        static string titleBchcoin => "BCH Click Bot";
+        static string titleScushcoin => "ZEC Click Bot";
+        static string titleBitcoin => "BTC Click Bot";
 
     }
 }

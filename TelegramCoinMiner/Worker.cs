@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace TelegramCoinMiner
 {
     public class Worker
@@ -17,6 +18,7 @@ namespace TelegramCoinMiner
         public Worker()
         {
             _tokenSource = new CancellationTokenSource();
+           
         }
 
         public void Start(Action workerJob)

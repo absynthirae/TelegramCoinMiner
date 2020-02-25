@@ -106,6 +106,10 @@
     <Compile Include="Commands\SendStartCommand.cs" />
     <Compile Include="Commands\SendVisitCommand.cs" />
     <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\CapchaException.cs" />
+    <Compile Include="Exceptions\MessageNotFoundException.cs" />
+    <Compile Include="Exceptions\TimeOutException.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="ClickBotInfo.cs" />

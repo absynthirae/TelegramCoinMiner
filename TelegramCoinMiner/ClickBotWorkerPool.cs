@@ -4,8 +4,11 @@ namespace TelegramCoinMiner
 {
     public class ClickBotWorkerPool
     {
-        public List<Worker> ClickBotWorkers { get; set; }
+        public List<Worker> ClickBotWorkers { get ; set; }
 
-        
+        public ClickBotWorkerPool()
+        {
+
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace TelegramCoinMiner
             _listOfBots = clickBotInfos;
         }
 
-        public ClickBotInfo GetNext()
+        public ClickBotInfo Next()
         {
             _currentIndex = (_currentIndex + 1) % _listOfBots.Count;
             return _listOfBots[_currentIndex];

@@ -9,10 +9,11 @@ using TeleSharp.TL.Messages;
 
 namespace TelegramCoinMiner.Commands
 {
-    public class GetUrlAndWatchAdCommand : IAsyncCommand
+    public class WatchAdCommand : IAsyncCommand
     {
-        public GetUrlAndWatchAdParams Params { get; set; }
-        public GetUrlAndWatchAdCommand(GetUrlAndWatchAdParams commandParams)
+        public WatchAdParams Params { get; set; }
+
+        public WatchAdCommand(WatchAdParams commandParams)
         {
             Params = commandParams;
         }
@@ -23,6 +24,12 @@ namespace TelegramCoinMiner.Commands
             var messages = await Params.TelegramClient.GetMessages(Params.BotChannel, Constants.ReadMessagesCount);
 
             var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
+
+            if (adMessage == null)
+            {
+                throw new AdMessageNotFoundException();
+            }
+
             var goToWebsiteButton = adMessage.GetButtonWithUrl("go to website");
             string url = goToWebsiteButton.Url;
             Console.WriteLine("URL:" + url);

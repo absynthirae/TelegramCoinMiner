@@ -2,7 +2,7 @@
 
 namespace TelegramCoinMiner.Exceptions
 {
-    class MessageNotFoundException : Exception
+    class AdMessageNotFoundException : Exception
     {
         public override string Message => "Not found Messages";
 

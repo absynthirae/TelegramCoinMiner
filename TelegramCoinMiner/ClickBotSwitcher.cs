@@ -4,29 +4,39 @@ namespace TelegramCoinMiner
 {
     class ClickBotSwitcher
     {
-        List<ClickBotInfo> listOfBots = new List<ClickBotInfo>()
-        {
-             ClickBotInfo.CreateDogecoinClickBotInfo(),
-             ClickBotInfo.CreateZcashClickBotInfo(),
-             ClickBotInfo.CreateLitecoinClickBotInfo()
-        };
+        private int _currentIndex = 0;
+        private List<ClickBotInfo> _listOfBots;
+        public ClickBotInfo CurrentBotInfo => _listOfBots[_currentIndex];
 
-        int _currentNumber = 0;
+        public ClickBotSwitcher()
+        {
+            _listOfBots = new List<ClickBotInfo>()
+            {
+                ClickBotInfo.CreateDogecoinClickBotInfo(),
+                ClickBotInfo.CreateZcashClickBotInfo(),
+                ClickBotInfo.CreateLitecoinClickBotInfo()
+            };
+        }
+
+        public ClickBotSwitcher(List<ClickBotInfo> clickBotInfos)
+        {
+            _listOfBots = clickBotInfos;
+        }
+
         public ClickBotInfo GetNext()
         {
-            _currentNumber += (_currentNumber + 1) % listOfBots.Count;
-            return listOfBots[_currentNumber];
+            _currentIndex = (_currentIndex + 1) % _listOfBots.Count;
+            return _listOfBots[_currentIndex];
         }
+
         public void AddBot(ClickBotInfo cn)
         {
-            listOfBots.Add(cn);
+            _listOfBots.Add(cn);
         }
 
         public void DeleteBot(ClickBotInfo cn)
         {
-            listOfBots.Remove(cn);
+            _listOfBots.Remove(cn);
         }
-
-
     }
 }

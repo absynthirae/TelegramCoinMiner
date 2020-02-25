@@ -3,9 +3,9 @@ using System.Runtime.Serialization;
 
 namespace TelegramCoinMiner.Exceptions
 {
-    class TimeOutException : Exception
+    class BrowserTimeoutException : Exception
     {
-        public override string Message => "Browser TimeOut done";
+        public override string Message => "Browser Timeout done";
 
         public override string ToString() 
         {

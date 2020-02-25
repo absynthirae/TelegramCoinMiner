@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
+using TelegramCoinMiner.Exceptions;
 using TelegramCoinMiner.Extensions;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
@@ -30,7 +31,7 @@ namespace TelegramCoinMiner.Commands
             {
                 Console.WriteLine("Подозрение на DDos => пропуск");
                 await SkipTask(adMessage);
-                throw new Exception("Browser Timeout");
+                throw new BrowserTimeoutException();
             }
 
             Console.WriteLine("Страница загружена");
@@ -39,7 +40,7 @@ namespace TelegramCoinMiner.Commands
             {
                 Console.WriteLine("Капча");
                 await SkipTask(adMessage);
-                throw new Exception("Capcha");
+                throw new CapchaException();
             }
             else
             {
@@ -51,7 +52,7 @@ namespace TelegramCoinMiner.Commands
             {
                 Console.WriteLine("Подозрение на DDos => пропуск");
                 await SkipTask(adMessage);
-                throw new Exception("Browser Timeout");
+                throw new BrowserTimeoutException();
             };
         }
 

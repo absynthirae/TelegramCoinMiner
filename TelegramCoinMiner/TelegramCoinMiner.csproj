@@ -99,8 +99,10 @@
     <Compile Include="Commands\GetUrlAndWatchAdCommand.cs" />
     <Compile Include="Commands\IAsyncCommand.cs" />
     <Compile Include="Commands\Params\GetUrlAndWatchAdParams.cs" />
+    <Compile Include="Commands\Params\SendStartParams.cs" />
     <Compile Include="Commands\Params\SendVisitParams.cs" />
     <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />
+    <Compile Include="Commands\SendStartCommand.cs" />
     <Compile Include="Commands\SendVisitCommand.cs" />
     <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />

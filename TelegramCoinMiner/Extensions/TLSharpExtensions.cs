@@ -22,9 +22,14 @@ namespace TelegramCoinMiner.Extensions
             return messagesSlice.Messages;
         }
 
-        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, TLChannel channel, int count)
+        public async static Task<TLVector<TLAbsMessage>> GetMessages(this TelegramClient client, TLUser channel, int count)
         {
             return await client.GetMessages(channel.AccessHash.Value, channel.Id, count);
+        }
+
+        public async static Task<TLAbsUpdates> SendMessageAsync(this TelegramClient client, TLUser channel, string message)
+        {
+            return await client.SendMessageAsync(new TLInputPeerUser { UserId = channel.Id, AccessHash = channel.AccessHash.Value }, message);
         }
 
         public static TLKeyboardButtonUrl GetButtonWithUrl(this IEnumerable<TLMessage> messages, string searchText)

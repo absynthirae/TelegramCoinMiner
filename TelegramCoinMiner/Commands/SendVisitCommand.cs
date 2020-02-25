@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
+using TelegramCoinMiner.Extensions;
 
 namespace TelegramCoinMiner.Commands
 {
@@ -14,7 +15,7 @@ namespace TelegramCoinMiner.Commands
 
         public async Task Execute()
         {
-          await Params.TelegramClient.SendMessageAsync(Params.Channel, "/visit");
+            await Params.TelegramClient.SendMessageAsync(Params.Channel, "/visit");
         }
     }
 }

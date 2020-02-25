@@ -6,6 +6,6 @@ namespace TelegramCoinMiner.Commands.Params
     public class SendVisitParams
     {
         public TelegramClient TelegramClient { get; set; }
-        public TLInputPeerChannel Channel { get; set; }
+        public TLUser Channel { get; set; }
     }
 }

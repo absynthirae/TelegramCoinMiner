@@ -16,7 +16,7 @@ namespace TelegramCoinMiner.Commands
         private ClickBotSwitcher _botSwitcher;
         private TLUser _currentChannel;
         private TLMessage _adMessage;
-
+        private int _adMessageNotFoundCount = 0;
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
         {
             Params = commandParams;
@@ -27,9 +27,14 @@ namespace TelegramCoinMiner.Commands
         {
             try
             {
-                _currentChannel = await GetCurrentChannel();
-                TLMessage _adMessage = await GetAdMessage(_currentChannel);
-                await ExecuteSendVisitCommand(_currentChannel);
+                if (_currentChannel == null ||
+                    (_currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title &&
+                    _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName))
+                {
+                    _currentChannel = await GetCurrentChannel();
+                    await ExecuteSendVisitCommand(_currentChannel);
+                }
+                _adMessage = await GetAdMessage(_currentChannel);
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
@@ -38,7 +43,12 @@ namespace TelegramCoinMiner.Commands
             }
             catch (AdMessageNotFoundException)
             {
-                //add handler
+                if (_adMessageNotFoundCount > 10)
+                {
+                    _botSwitcher.Next();
+                    _adMessageNotFoundCount = 0;
+                }
+                await ExecuteSendVisitCommand(_currentChannel);
             }
             catch (BrowserTimeoutException)
             {
@@ -54,7 +64,7 @@ namespace TelegramCoinMiner.Commands
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Непредвиденная ошибка" + ex.Message);
+                Console.WriteLine("Непредвиденная ошибка: " + ex.Message);
             }
         }
 
@@ -110,6 +120,7 @@ namespace TelegramCoinMiner.Commands
             {
                 throw new AdMessageNotFoundException();
             }
+            _adMessageNotFoundCount = 0;
             return adMessage;
         }
 

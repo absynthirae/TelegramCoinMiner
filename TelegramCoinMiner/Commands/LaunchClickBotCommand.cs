@@ -12,46 +12,49 @@ namespace TelegramCoinMiner.Commands
     class LaunchClickBotCommand : IAsyncCommand
     {
         public LaunchClickBotParams Params { get; set; }
+
         private ClickBotSwitcher _botSwitcher;
-        private TLUser _currentChannel = new TLUser();
+        private TLUser _currentChannel;
         private TLMessage _adMessage;
         private int _adMessageNotFoundCount = 0;
-        private DateTime startTime { get; set; }
+        private DateTime _startTime;
+
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
         {
             Params = commandParams;
             _botSwitcher = new ClickBotSwitcher();
+            _currentChannel = new TLUser();
         }
 
         public async Task Execute()
         {
-            startTime = DateTime.Now;
+            _startTime = DateTime.Now;
             try
             {
-                if (_currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title &&
-                    _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName)
+                if (BotInfoMatchWithChannelInfo())
                 {
                     _currentChannel = await GetCurrentChannel();
-                    await ExecuteSendVisitCommand(_currentChannel);
-                    if (DateTime.Now - startTime > TimeSpan.FromMinutes(20)) { await Task.Delay(300000); }
+                    await ExecuteSendVisitCommand();
+                    if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(5));
+                    }
                 }
-
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
-                    _adMessage = await GetAdMessage(_currentChannel);
-                    await ExecuteWatchAdAndWaitForEndOfAdCommand(_currentChannel, _adMessage);
-                   
+                    _adMessage = await GetAdMessage();
+                    await ExecuteWatchAdAndWaitForEndOfAdCommand();
                 }
             }
             catch (AdMessageNotFoundException)
             {
+                _adMessageNotFoundCount++;
                 if (_adMessageNotFoundCount > 10)
                 {
                     _botSwitcher.Next();
                     _adMessageNotFoundCount = 0;
                 }
-                // await ExecuteSendVisitCommand(_currentChannel);
             }
             catch (BrowserTimeoutException)
             {
@@ -63,34 +66,40 @@ namespace TelegramCoinMiner.Commands
             }
             catch (ClickBotNotStartedException)
             {
-                await ExecuteStartCommand(_currentChannel);
+                await ExecuteStartCommand();
             }
-            catch(TLSharp.Core.Network.Exceptions.FloodException ex) {
-                Console.WriteLine("Too much of message");
+            catch(TLSharp.Core.Network.Exceptions.FloodException ex) 
+            {
+                Console.WriteLine(ex.Message);
                 await Task.Delay(ex.TimeToWait);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Непредвиденная ошибка: " + ex.Message);
             }
-            
         }
 
-        private async Task ExecuteSendVisitCommand(TLUser currentChannel)
+        private bool BotInfoMatchWithChannelInfo()
+        {
+            return _currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title && 
+                _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName;
+        }
+
+        private async Task ExecuteSendVisitCommand()
         {
             IAsyncCommand sendVisitCommand = new SendVisitCommand(new SendVisitParams
             {
-                Channel = currentChannel,
+                Channel = _currentChannel,
                 TelegramClient = Params.TelegramClient
             });
             await sendVisitCommand.Execute();
         }
 
-        private async Task ExecuteStartCommand(TLUser currentChannel)
+        private async Task ExecuteStartCommand()
         {
             IAsyncCommand startCommand = new SendStartCommand(new SendStartParams
             {
-                Channel = currentChannel,
+                Channel = _currentChannel,
                 TelegramClient = Params.TelegramClient,
             });
             await startCommand.Execute();
@@ -115,9 +124,9 @@ namespace TelegramCoinMiner.Commands
             return currentChannel;
         }
 
-        private async Task<TLMessage> GetAdMessage(TLUser currentChannel)
+        private async Task<TLMessage> GetAdMessage()
         {
-            var messages = await Params.TelegramClient.GetMessages(currentChannel, Constants.ReadMessagesCount);
+            var messages = await Params.TelegramClient.GetMessages(_currentChannel, Constants.ReadMessagesCount);
 
             if (messages == null)
             {
@@ -133,21 +142,21 @@ namespace TelegramCoinMiner.Commands
             return adMessage;
         }
 
-        private async Task ExecuteWatchAdAndWaitForEndOfAdCommand(TLUser currentChannel, TLMessage adMessage)
+        private async Task ExecuteWatchAdAndWaitForEndOfAdCommand()
         {
             var commands = new List<IAsyncCommand>();
             commands.Add(new WatchAdCommand(
                         new WatchAdParams
                         {
-                            Channel = currentChannel,
+                            Channel = _currentChannel,
                             TelegramClient = Params.TelegramClient,
                             Browser = Params.Browser,
-                            AdMessage = adMessage
+                            AdMessage = _adMessage
                         }));
             commands.Add(new WaitForTheEndOfAdCommand(
                         new WaitForTheEndOfAdParams
                         {
-                            Channel = currentChannel,
+                            Channel = _currentChannel,
                             TelegramClient = Params.TelegramClient
                         }));
             IAsyncCommand macroCommand = new MacroCommand(commands);

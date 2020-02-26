@@ -121,6 +121,7 @@
     <Compile Include="TelegramClientFactory.cs" />
     <Compile Include="TelegramClientWrapper.cs" />
     <Compile Include="TelegramLoginParams.cs" />
+    <Compile Include="WebBrowserFactory.cs" />
     <Compile Include="Worker.cs" />
   </ItemGroup>
   <ItemGroup>

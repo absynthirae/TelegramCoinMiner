@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
 using TelegramCoinMiner.Exceptions;
 using TelegramCoinMiner.Extensions;
-using TeleSharp.TL;
-using TeleSharp.TL.Messages;
 
 namespace TelegramCoinMiner.Commands
 {

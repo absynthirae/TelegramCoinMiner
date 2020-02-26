@@ -35,16 +35,17 @@ namespace TelegramCoinMiner.Commands
                 {
                     _currentChannel = await GetCurrentChannel();
                     await ExecuteSendVisitCommand();
-                    if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
-                    {
-                        await Task.Delay(TimeSpan.FromMinutes(5));
-                    }
                 }
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
                     _adMessage = await GetAdMessage();
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
+                    if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(5));
+                        await ExecuteSendVisitCommand();
+                    }
                 }
             }
             catch (AdMessageNotFoundException)
@@ -71,7 +72,7 @@ namespace TelegramCoinMiner.Commands
             catch(TLSharp.Core.Network.Exceptions.FloodException ex) 
             {
                 Console.WriteLine(ex.Message);
-                await Task.Delay(ex.TimeToWait);
+                await Task.Delay(ex.TimeToWait.Add(TimeSpan.FromMinutes(3)));
             }
             catch (Exception ex)
             {

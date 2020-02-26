@@ -13,8 +13,7 @@ namespace TelegramCoinMiner
             _listOfBots = new List<ClickBotInfo>()
             {
                 ClickBotInfo.CreateDogecoinClickBotInfo(),
-                ClickBotInfo.CreateZcashClickBotInfo(),
-                ClickBotInfo.CreateLitecoinClickBotInfo()
+                ClickBotInfo.CreateBitcoinClickBotInfo()
             };
         }
 

@@ -1,4 +1,5 @@
 ﻿using CefSharp.OffScreen;
+using System.Threading;
 using TLSharp.Core;
 
 namespace TelegramCoinMiner.Commands.Params
@@ -7,6 +8,6 @@ namespace TelegramCoinMiner.Commands.Params
     {
         public TelegramClient TelegramClient { get; set; }
         public ChromiumWebBrowser Browser { get; set; }
-        public bool IsWorks { get; set; }
+        public CancellationTokenSource TokenSource { get; set; }
     }
 }

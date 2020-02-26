@@ -16,20 +16,19 @@ namespace TelegramCoinMiner
         private CancellationTokenSource _tokenSource;
         private CancellationToken _token;
 
-        public Worker()
+        public Worker(Action workerJob, CancellationTokenSource tokenSource)
         {
-            _tokenSource = new CancellationTokenSource();
+            _tokenSource = tokenSource;
             _token = _tokenSource.Token;
+            InitializeWorkerThread(workerJob);
         }
 
-        public void Start(Action workerJob)
+        public void Start()
         {
             if (IsWorks)
             {
                 Stop();
             }
-
-            InitializeWorkerThread(workerJob);
             _workerThread.Start();
         }
 

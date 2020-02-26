@@ -9,7 +9,7 @@
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.NameBitcoin, 
+                BotName = Constants.NameBitcoin,
                 Title = Constants.TitleBitcoin 
             };
             
@@ -19,7 +19,7 @@
         {
             return new ClickBotInfo 
             { 
-                BotName = Constants.TitleBch, 
+                BotName = Constants.NameBch, 
                 Title= Constants.TitleBch 
             };
         }
@@ -28,7 +28,7 @@
         {
             return new ClickBotInfo 
             {
-                BotName = Constants.TitleDogecoin, 
+                BotName = Constants.NameDogecoin, 
                 Title = Constants.TitleDogecoin
             };
         }

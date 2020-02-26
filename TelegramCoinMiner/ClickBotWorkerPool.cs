@@ -10,9 +10,11 @@ namespace TelegramCoinMiner
 
         public ClickBotWorkerPool(List<LaunchClickBotParams> clickBotsParams)
         {
+            ClickBotWorkers = new List<Worker>();
             foreach (var item in clickBotsParams)
             {
-                ClickBotWorkers.Add(new Worker(async () => await new LaunchClickBotCommand(item).Execute(), item.TokenSource));
+                var launchCommand = new LaunchClickBotCommand(item);
+                ClickBotWorkers.Add(new Worker(() => launchCommand.Execute().Wait(), item.TokenSource));
             }
         }
 

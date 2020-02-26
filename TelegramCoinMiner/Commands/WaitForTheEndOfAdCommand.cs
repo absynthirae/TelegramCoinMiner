@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
@@ -24,12 +25,21 @@ namespace TelegramCoinMiner.Commands
         private async Task<int> GetTaskWaitTimeInSeconds()
         {
             //Wait message about task wait time
-            await Task.Delay(1500);
+            await Task.Delay(2000);
             //Default time
             int time = 15;
-            (await Params.TelegramClient.GetMessages(Params.Channel, Constants.ReadMessagesCount))
-                .OfType<TLMessage>()
-                .Where(x => x.Message.Contains("seconds"))
+
+            var messages = (await Params.TelegramClient.GetMessages(Params.Channel, Constants.ReadMessagesCount)).OfType<TLMessage>();
+
+            //var earnedMessage = messages.FirstOrDefault(x => x.Message.StartsWith("You earned") && x.Message.EndsWith("for visiting a site!"));
+
+            //if (earnedMessage != null)
+            //{
+            //    Console.WriteLine(earnedMessage.Message);
+            //    return 5;
+            //}
+
+            messages.Where(x => x.Message.Contains("seconds"))
                 .FirstOrDefault()
                 .Message
                 .Split(new char[] { ' ' })

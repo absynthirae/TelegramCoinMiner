@@ -7,7 +7,7 @@ namespace TelegramCoinMiner
 {
     static class TelegramClientFactory
     {
-        public static List<TelegramClient> TelegramClients { get; set; }
+        public static List<TelegramClient> TelegramClients { get; set; } = new List<TelegramClient>();
 
         public static async Task<TelegramClient> CreateTelegramClientAsync(string phoneNumber)
         {

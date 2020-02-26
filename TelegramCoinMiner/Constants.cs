@@ -6,11 +6,11 @@
         public static int ReadMessagesCount => 2;
         public static int StandartTimeDelay => 1500;
 
-        public static string NameDogecoin => "@Dogecoin_click_bot";
-        public static string NameLitecoin => "@Litecoin_click_bot";
-        public static string NameBch  => "@BCH_clickbot";
-        public static string NameZcash => "@Zcash_click_bot";
-        public static string NameBitcoin  => "@BitcoinClick_bot";
+        public static string NameDogecoin => "Dogecoin_click_bot";
+        public static string NameLitecoin => "Litecoin_click_bot";
+        public static string NameBch  => "BCH_clickbot";
+        public static string NameZcash => "Zcash_click_bot";
+        public static string NameBitcoin  => "BitcoinClick_bot";
 
         public static string TitleDogecoin => "DOGE Click Bot";
         public static string TitleLitecoin => "LTC Click Bot";

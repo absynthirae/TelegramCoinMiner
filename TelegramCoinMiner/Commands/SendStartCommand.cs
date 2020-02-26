@@ -4,11 +4,11 @@ using TelegramCoinMiner.Extensions;
 
 namespace TelegramCoinMiner.Commands
 {
-    public class SendSkipCommand : IAsyncCommand
+    public class SendStartCommand : IAsyncCommand
     {
-        public SendSkipParams Params { get; set; }
+        public SendStartParams Params { get; set; }
 
-        public SendSkipCommand(SendSkipParams commandParams)
+        public SendStartCommand(SendStartParams commandParams)
         {
             Params = commandParams;
         }
@@ -16,6 +16,7 @@ namespace TelegramCoinMiner.Commands
         public async Task Execute()
         {
             await Params.TelegramClient.SendMessageAsync(Params.Channel, "/start");
+            
         }
     }
 }

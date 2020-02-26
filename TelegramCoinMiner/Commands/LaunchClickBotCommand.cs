@@ -6,7 +6,6 @@ using TelegramCoinMiner.Commands.Params;
 using TelegramCoinMiner.Exceptions;
 using TelegramCoinMiner.Extensions;
 using TeleSharp.TL;
-using TeleSharp.TL.Contacts;
 
 namespace TelegramCoinMiner.Commands
 {
@@ -14,7 +13,7 @@ namespace TelegramCoinMiner.Commands
     {
         public LaunchClickBotParams Params { get; set; }
         private ClickBotSwitcher _botSwitcher;
-        private TLUser _currentChannel;
+        private TLUser _currentChannel = new TLUser();
         private TLMessage _adMessage;
         private int _adMessageNotFoundCount = 0;
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
@@ -27,9 +26,8 @@ namespace TelegramCoinMiner.Commands
         {
             try
             {
-                if (_currentChannel == null ||
-                    (_currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title &&
-                    _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName))
+                if (_currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title &&
+                    _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName)
                 {
                     _currentChannel = await GetCurrentChannel();
                     await ExecuteSendVisitCommand(_currentChannel);
@@ -80,7 +78,7 @@ namespace TelegramCoinMiner.Commands
 
         private async Task ExecuteStartCommand(TLUser currentChannel)
         {
-            IAsyncCommand startCommand = new SendSkipCommand(new SendSkipParams
+            IAsyncCommand startCommand = new SendStartCommand(new SendStartParams
             {
                 Channel = currentChannel,
                 TelegramClient = Params.TelegramClient,
@@ -90,18 +88,19 @@ namespace TelegramCoinMiner.Commands
 
         private async Task ExecuteSkipCommand()
         {
-            IAsyncCommand startCommand = new SendSkipCommand(new SendSkipParams
+            IAsyncCommand skipAdCommand = new SkipAdCommand(new SkipAdParams
             {
                 Channel = _currentChannel,
-                TelegramClient = Params.TelegramClient
+                TelegramClient = Params.TelegramClient,
+                AdMessage = _adMessage
             });
-            await startCommand.Execute();
+            await skipAdCommand.Execute();
         }
 
         private async Task<TLUser> GetCurrentChannel()
         {
             var currentBotInfo = _botSwitcher.CurrentBotInfo;
-            TLFound foundChannels = await Params.TelegramClient.SearchUserAsync(currentBotInfo.BotName);
+            var foundChannels = await Params.TelegramClient.SearchUserAsync(currentBotInfo.BotName);
             var currentChannel = foundChannels.Users.OfType<TLUser>().FirstOrDefault(x => x.Username == currentBotInfo.BotName && x.FirstName == currentBotInfo.Title);
             return currentChannel;
         }

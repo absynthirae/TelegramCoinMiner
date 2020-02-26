@@ -10,7 +10,7 @@ namespace TelegramCoinMiner
 {
     public class Worker
     {
-        public bool IsWorks { get => (_token != null) && !_token.IsCancellationRequested; }
+        public bool IsWorks { get => (_token != null) && _token.IsCancellationRequested; }
 
         private Task _workerThread;
         private CancellationTokenSource _tokenSource;

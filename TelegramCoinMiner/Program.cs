@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using TelegramCoinMiner.Commands.Params;
 
 namespace TelegramCoinMiner
 {
@@ -25,13 +28,26 @@ namespace TelegramCoinMiner
 
             string phone = Console.ReadLine();
 
-            TelegramClientWrapper telegramClient = new TelegramClientWrapper(apiId, apiHash, phone, wrapper._browser);
+            //TelegramClientWrapper telegramClient = new TelegramClientWrapper(apiId, apiHash, phone, wrapper._browser);
 
-            await telegramClient.Start();
+            //await telegramClient.Start();
+
+            var client = await TelegramClientFactory.CreateTelegramClientAsync(phone);
+
+            var workerPool = new ClickBotWorkerPool(new List<LaunchClickBotParams>() {
+                new LaunchClickBotParams
+                {
+                    TelegramClient = client,
+                    Browser = wrapper._browser,
+                    TokenSource = new CancellationTokenSource()
+                }
+            });
+            workerPool.Start();
 
             if (Console.ReadKey().Key == ConsoleKey.Escape) 
-            {           
-                telegramClient.Stop();
+            {
+                //telegramClient.Stop();
+                workerPool.Stop();
                 Console.WriteLine("Вы прервали процесс");
             }
         }

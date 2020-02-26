@@ -110,16 +110,13 @@
     <Compile Include="Exceptions\BrowserTimeoutException.cs" />
     <Compile Include="Exceptions\ClickBotNotStartedException.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
-    <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="ClickBotInfo.cs" />
-    <Compile Include="ConvertHelper.cs" />
     <Compile Include="CefHandlers\JSDialogHandler.cs" />
     <Compile Include="CefHandlers\LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TLSharpExtensions.cs" />
     <Compile Include="TelegramClientFactory.cs" />
-    <Compile Include="TelegramClientWrapper.cs" />
     <Compile Include="TelegramLoginParams.cs" />
     <Compile Include="WebBrowserFactory.cs" />
     <Compile Include="Worker.cs" />

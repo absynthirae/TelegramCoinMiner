@@ -12,6 +12,7 @@ namespace TelegramCoinMiner
         public static async Task<TelegramClient> CreateTelegramClientAsync(string phoneNumber)
         {
             var client = TelegramClients.FirstOrDefault(x => x.Session.TLUser.Phone == phoneNumber);
+
             if (client != null)
             {
                 return client;

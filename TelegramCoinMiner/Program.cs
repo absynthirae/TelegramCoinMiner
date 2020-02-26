@@ -42,6 +42,7 @@ namespace TelegramCoinMiner
                     TokenSource = new CancellationTokenSource()
                 }
             });
+
             workerPool.Start();
 
             if (Console.ReadKey().Key == ConsoleKey.Escape) 

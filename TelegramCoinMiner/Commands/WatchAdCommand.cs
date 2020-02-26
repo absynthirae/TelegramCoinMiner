@@ -53,6 +53,7 @@ namespace TelegramCoinMiner.Commands
                 Console.WriteLine("Подозрение на DDos => пропуск");
                 throw new BrowserTimeoutException();
             }
+           
         }
     }
 }

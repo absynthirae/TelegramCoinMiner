@@ -16,6 +16,7 @@ namespace TelegramCoinMiner.Commands
         private TLUser _currentChannel = new TLUser();
         private TLMessage _adMessage;
         private int _adMessageNotFoundCount = 0;
+        private DateTime startTime { get; set; }
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
         {
             Params = commandParams;
@@ -24,6 +25,7 @@ namespace TelegramCoinMiner.Commands
 
         public async Task Execute()
         {
+            startTime = DateTime.Now;
             try
             {
                 if (_currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title &&
@@ -31,12 +33,15 @@ namespace TelegramCoinMiner.Commands
                 {
                     _currentChannel = await GetCurrentChannel();
                     await ExecuteSendVisitCommand(_currentChannel);
+                    if (DateTime.Now - startTime > TimeSpan.FromMinutes(20)) { await Task.Delay(300000); }
                 }
-                _adMessage = await GetAdMessage(_currentChannel);
+
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
+                    _adMessage = await GetAdMessage(_currentChannel);
                     await ExecuteWatchAdAndWaitForEndOfAdCommand(_currentChannel, _adMessage);
+                   
                 }
             }
             catch (AdMessageNotFoundException)
@@ -46,7 +51,7 @@ namespace TelegramCoinMiner.Commands
                     _botSwitcher.Next();
                     _adMessageNotFoundCount = 0;
                 }
-                await ExecuteSendVisitCommand(_currentChannel);
+                // await ExecuteSendVisitCommand(_currentChannel);
             }
             catch (BrowserTimeoutException)
             {
@@ -60,10 +65,15 @@ namespace TelegramCoinMiner.Commands
             {
                 await ExecuteStartCommand(_currentChannel);
             }
+            catch(TLSharp.Core.Network.Exceptions.FloodException ex) {
+                Console.WriteLine("Too much of message");
+                await Task.Delay(ex.TimeToWait);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Непредвиденная ошибка: " + ex.Message);
             }
+            
         }
 
         private async Task ExecuteSendVisitCommand(TLUser currentChannel)

@@ -3,7 +3,7 @@ using CefSharp.OffScreen;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TelegramCoinMiner.CefHandlers;
 namespace TelegramCoinMiner
 {
     public class JavascriptException : Exception
@@ -35,7 +35,8 @@ namespace TelegramCoinMiner
             onBrowserInitialized = (sender, e) =>
             {
                 _browser.BrowserInitialized -= onBrowserInitialized;
-
+                _browser.LifeSpanHandler = new LifeSpanHandler();
+                _browser.JsDialogHandler = new JSDialogHandler();
                 waitHandle.Set();
             };
 

@@ -3,7 +3,7 @@ using TLSharp.Core;
 
 namespace TelegramCoinMiner.Commands.Params
 {
-    public class SendStartParams
+    public class SendSkipParams
     {
         public TelegramClient TelegramClient { get; set; }
         public TLUser Channel { get; set; }

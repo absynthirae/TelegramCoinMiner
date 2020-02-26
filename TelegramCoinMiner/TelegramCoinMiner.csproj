@@ -108,6 +108,7 @@
     <Compile Include="Exceptions\CapchaException.cs" />
     <Compile Include="Exceptions\AdMessageNotFoundException.cs" />
     <Compile Include="Exceptions\BrowserTimeoutException.cs" />
+    <Compile Include="Exceptions\ClickBotNotStartedException.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
     <Compile Include="CefSharpWrapper.cs" />
     <Compile Include="ClickBotInfo.cs" />

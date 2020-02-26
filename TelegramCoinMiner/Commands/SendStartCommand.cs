@@ -1,14 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
 using TelegramCoinMiner.Extensions;
 
 namespace TelegramCoinMiner.Commands
 {
-    public class SendStartCommand : IAsyncCommand
+    public class SendSkipCommand : IAsyncCommand
     {
-        public SendStartParams Params { get; set; }
-        public SendStartCommand(SendStartParams commandParams)
+        public SendSkipParams Params { get; set; }
+
+        public SendSkipCommand(SendSkipParams commandParams)
         {
             Params = commandParams;
         }

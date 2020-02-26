@@ -118,6 +118,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TLSharpExtensions.cs" />
+    <Compile Include="TelegramClientFactory.cs" />
     <Compile Include="TelegramClientWrapper.cs" />
     <Compile Include="TelegramLoginParams.cs" />
     <Compile Include="Worker.cs" />

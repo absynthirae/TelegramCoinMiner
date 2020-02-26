@@ -92,6 +92,8 @@
     <Compile Include="ClickBotWorkerPool.cs" />
     <Compile Include="Commands\LaunchClickBotCommand.cs" />
     <Compile Include="Commands\MacroCommand.cs" />
+    <Compile Include="Commands\Params\SkipAdParams.cs" />
+    <Compile Include="Commands\SkipAdCommand.cs" />
     <Compile Include="Commands\WatchAdCommand.cs" />
     <Compile Include="Commands\IAsyncCommand.cs" />
     <Compile Include="Commands\Params\WatchAdParams.cs" />

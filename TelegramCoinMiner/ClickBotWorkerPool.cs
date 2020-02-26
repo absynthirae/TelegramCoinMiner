@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TLSharp.Core;
 
 namespace TelegramCoinMiner
 {
@@ -6,7 +7,7 @@ namespace TelegramCoinMiner
     {
         public List<Worker> ClickBotWorkers { get ; set; }
 
-        public ClickBotWorkerPool()
+        public ClickBotWorkerPool(List<TelegramClient> telegramClients)
         {
 
         }

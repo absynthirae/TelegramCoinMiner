@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using TelegramCoinMiner.Commands.Params;
+using TelegramCoinMiner.Extensions;
 using TeleSharp.TL;
 using TeleSharp.TL.Contacts;
 
@@ -23,6 +24,9 @@ namespace TelegramCoinMiner.Commands
             TLFound foundChannels = await Params.TelegramClient.SearchUserAsync(currentBotInfo.BotName);
             var currentChannel = foundChannels.Users.OfType<TLUser>().FirstOrDefault(x => x.Username == currentBotInfo.BotName && x.FirstName == currentBotInfo.Title);
 
+            var messages = await Params.TelegramClient.GetMessages(currentChannel, Constants.ReadMessagesCount);
+            var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
+
             IAsyncCommand sendVisitCommand = new SendVisitCommand(new SendVisitParams
                 {
                     Channel = currentChannel,
@@ -32,14 +36,15 @@ namespace TelegramCoinMiner.Commands
 
             while (Params.IsWorks)
             {
-                IAsyncCommand getUrlAndWatchAdCommand = new WatchAdCommand(
+                IAsyncCommand WatchAdCommand = new WatchAdCommand(
                     new WatchAdParams 
                     {
-                        BotChannel = currentChannel,
+                        Channel = currentChannel,
                         TelegramClient = Params.TelegramClient,
-                        Browser = Params.Browser
+                        Browser = Params.Browser,
+                        AdMessage = adMessage
                     });
-                await getUrlAndWatchAdCommand.Execute();
+                await WatchAdCommand.Execute();
 
                 IAsyncCommand waitForTheEndOfAdCommand = new WaitForTheEndOfAdCommand(
                     new WaitForTheEndOfAdParams

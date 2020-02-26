@@ -21,7 +21,7 @@ namespace TelegramCoinMiner.Commands
         public async Task Execute()
         {
             Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
-            var messages = await Params.TelegramClient.GetMessages(Params.BotChannel, Constants.ReadMessagesCount);
+            var messages = await Params.TelegramClient.GetMessages(Params.Channel, Constants.ReadMessagesCount);
 
             var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
 
@@ -71,7 +71,7 @@ namespace TelegramCoinMiner.Commands
             await Params.TelegramClient.SendRequestAsync<object>(
                 new TLRequestGetBotCallbackAnswer()
                 {
-                    Peer = new TLInputPeerUser() { UserId = Params.BotChannel.Id, AccessHash = Params.BotChannel.AccessHash.Value },
+                    Peer = new TLInputPeerUser() { UserId = Params.Channel.Id, AccessHash = Params.Channel.AccessHash.Value },
                     Data = data,
                     MsgId = messageId
                 });

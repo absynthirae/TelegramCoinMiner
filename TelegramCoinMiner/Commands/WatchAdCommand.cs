@@ -21,9 +21,7 @@ namespace TelegramCoinMiner.Commands
         public async Task Execute()
         {
             Console.WriteLine("-----------------------------------" + DateTime.Now.ToString("hh:mm:ss"));
-            var messages = await Params.TelegramClient.GetMessages(Params.Channel, Constants.ReadMessagesCount);
-
-            var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
+            var adMessage = Params.AdMessage;
 
             if (adMessage == null)
             {
@@ -37,7 +35,6 @@ namespace TelegramCoinMiner.Commands
             if (!Params.Browser.LoadPageAsync(url).Wait(60000))
             {
                 Console.WriteLine("Подозрение на DDos => пропуск");
-                await SkipTask(adMessage);
                 throw new BrowserTimeoutException();
             }
 
@@ -46,7 +43,6 @@ namespace TelegramCoinMiner.Commands
             if (await Params.Browser.HasDogeclickCapcha())
             {
                 Console.WriteLine("Капча");
-                await SkipTask(adMessage);
                 throw new CapchaException();
             }
             else
@@ -58,23 +54,8 @@ namespace TelegramCoinMiner.Commands
             if (!Task.Run(() => Params.Browser.CheckSpecificTaskAndSetHasFocusFunc()).Wait(60000))
             {
                 Console.WriteLine("Подозрение на DDos => пропуск");
-                await SkipTask(adMessage);
                 throw new BrowserTimeoutException();
             };
-        }
-
-        private async Task SkipTask(TLMessage adMessage)
-        {
-            var skipCallbackButton = adMessage.GetButtonWithCallBack("Skip");
-            var data = skipCallbackButton.Data;
-            var messageId = adMessage.Id;
-            await Params.TelegramClient.SendRequestAsync<object>(
-                new TLRequestGetBotCallbackAnswer()
-                {
-                    Peer = new TLInputPeerUser() { UserId = Params.Channel.Id, AccessHash = Params.Channel.AccessHash.Value },
-                    Data = data,
-                    MsgId = messageId
-                });
         }
     }
 }

@@ -88,28 +88,44 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BotsControllerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BotsControllerForm.Designer.cs">
-      <DependentUpon>BotsControllerForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DefaultRequestHandler.cs" />
+    <Compile Include="ClickBotSwitcher.cs" />
+    <Compile Include="ClickBotWorkerPool.cs" />
+    <Compile Include="Commands\LaunchClickBotCommand.cs" />
+    <Compile Include="Commands\MacroCommand.cs" />
+    <Compile Include="Commands\Params\SkipAdParams.cs" />
+    <Compile Include="Commands\SkipAdCommand.cs" />
+    <Compile Include="Commands\WatchAdCommand.cs" />
+    <Compile Include="Commands\IAsyncCommand.cs" />
+    <Compile Include="Commands\Params\WatchAdParams.cs" />
+    <Compile Include="Commands\Params\LaunchClickBotParams.cs" />
+    <Compile Include="Commands\Params\SendStartParams.cs" />
+    <Compile Include="Commands\Params\SendVisitParams.cs" />
+    <Compile Include="Commands\Params\WaitForTheEndOfAdParams.cs" />
+    <Compile Include="Commands\SendStartCommand.cs" />
+    <Compile Include="Commands\SendVisitCommand.cs" />
+    <Compile Include="Commands\WaitForTheEndOfAdCommand.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\CapchaException.cs" />
+    <Compile Include="Exceptions\AdMessageNotFoundException.cs" />
+    <Compile Include="Exceptions\BrowserTimeoutException.cs" />
+    <Compile Include="Exceptions\ClickBotNotStartedException.cs" />
     <Compile Include="Extensions\CefSharpExtensions.cs" />
-    <Compile Include="CefSharpWrapper.cs" />
-    <Compile Include="CoinClickBotInfo.cs" />
-    <Compile Include="ConvertHelper.cs" />
-    <Compile Include="JSDialogHandler.cs" />
-    <Compile Include="LifeSpanHandler.cs" />
+    <Compile Include="ClickBotInfo.cs" />
+    <Compile Include="CefHandlers\JSDialogHandler.cs" />
+    <Compile Include="CefHandlers\LifeSpanHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TLSharpExtensions.cs" />
-    <Compile Include="TelegramClientWrapper.cs" />
+    <Compile Include="TelegramClientFactory.cs" />
+    <Compile Include="TelegramLoginParams.cs" />
+    <Compile Include="WebBrowserFactory.cs" />
+    <Compile Include="Worker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

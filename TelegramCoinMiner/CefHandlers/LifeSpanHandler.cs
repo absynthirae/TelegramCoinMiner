@@ -1,6 +1,6 @@
 ﻿using CefSharp;
 
-namespace TelegramCoinMiner
+namespace TelegramCoinMiner.CefHandlers
 {
     class LifeSpanHandler : ILifeSpanHandler
     {

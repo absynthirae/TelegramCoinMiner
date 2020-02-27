@@ -37,11 +37,11 @@ namespace TelegramCoinMiner
 
             workerPool.Start();
 
-            if (Console.ReadKey().Key == ConsoleKey.Escape) 
-            {
-                workerPool.Stop();
-                Console.WriteLine("Вы прервали процесс");
-            }
+            //if (Console.ReadKey().Key == ConsoleKey.Escape) 
+            //{
+            //    workerPool.Stop();
+            //    Console.WriteLine("Вы прервали процесс");
+            //}
         }
     }
 }

@@ -24,11 +24,11 @@ namespace TelegramCoinMiner.Commands
             Params = commandParams;
             _botSwitcher = new ClickBotSwitcher();
             _currentChannel = new TLUser();
+            _startTime = DateTime.Now;
         }
 
         public async Task Execute()
         {
-            _startTime = DateTime.Now;
             try
             {
                 if (BotInfoMatchWithChannelInfo())
@@ -43,8 +43,11 @@ namespace TelegramCoinMiner.Commands
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
                     if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
                     {
+                        Console.WriteLine("Прошло 20 минут, отдых");
                         await Task.Delay(TimeSpan.FromMinutes(5));
+                        _startTime = DateTime.Now;
                         await ExecuteSendVisitCommand();
+                        await Task.Delay(1000);
                     }
                 }
             }
@@ -56,18 +59,23 @@ namespace TelegramCoinMiner.Commands
                     _botSwitcher.Next();
                     _adMessageNotFoundCount = 0;
                 }
+                await ExecuteSendVisitCommand();
+                await Task.Delay(1000);
             }
             catch (BrowserTimeoutException)
             {
                 await ExecuteSkipCommand();
+                await Task.Delay(1000);
             }
             catch (CapchaException)
             {
                 await ExecuteSkipCommand();
+                await Task.Delay(1000);
             }
             catch (ClickBotNotStartedException)
             {
                 await ExecuteStartCommand();
+                await Task.Delay(1000);
             }
             catch(TLSharp.Core.Network.Exceptions.FloodException ex) 
             {
@@ -76,6 +84,7 @@ namespace TelegramCoinMiner.Commands
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.GetType());
                 Console.WriteLine("Непредвиденная ошибка: " + ex.Message);
             }
         }

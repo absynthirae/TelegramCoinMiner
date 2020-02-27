@@ -6,6 +6,7 @@ using TelegramCoinMiner.Commands.Params;
 using TelegramCoinMiner.Exceptions;
 using TelegramCoinMiner.Extensions;
 using TeleSharp.TL;
+using TeleSharp.TL.Messages;
 
 namespace TelegramCoinMiner.Commands
 {
@@ -39,6 +40,22 @@ namespace TelegramCoinMiner.Commands
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
+                    ///Summary
+                    ///Контролить бота в телеге командами чтобы не сидеть перед компом
+                    ///
+
+                    #region ControllPanel 
+                    var com = await ListenControll();
+                    if("/stopBot" == com)
+                    {
+                        Console.WriteLine("Bot was stoped");
+                        while (ListenControll().Result != "/startBot") await Task.Delay(10000) ;
+
+                        Console.WriteLine("Bot was continued");
+                    }
+                    #endregion
+
+
                     _adMessage = await GetAdMessage();
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
                     if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
@@ -70,7 +87,7 @@ namespace TelegramCoinMiner.Commands
             catch (CapchaException)
             {
                 await ExecuteSkipCommand();
-                await Task.Delay(1000);
+                await Task.Delay(1500); //Changed for fix doubles
             }
             catch (ClickBotNotStartedException)
             {
@@ -150,6 +167,36 @@ namespace TelegramCoinMiner.Commands
             }
             _adMessageNotFoundCount = 0;
             return adMessage;
+        }
+
+        private async Task<string> ListenControll()
+        {
+
+            var dialogs = (TLDialogs) await Params.TelegramClient.GetUserDialogsAsync(); //получаем все диалоги
+
+            var ControlPanel = dialogs.Chats
+                .OfType<TLChannel>()
+                .FirstOrDefault(c => c.Title.ToLower() == "ControlPanel".ToLower());
+
+            var command = await Params.TelegramClient.SendRequestAsync<TLChannelMessages>(new TLRequestGetHistory()
+            {
+                Peer = new TLInputPeerChannel { AccessHash = ControlPanel.AccessHash.Value, ChannelId = ControlPanel.Id },
+                Limit = 1,
+                AddOffset = 0,
+                OffsetId = 0
+            });
+
+            var commandMessage = command.Messages.OfType<TLMessage>().FirstOrDefault(x => !x.Message.Contains("<Принято>"));
+
+            string commandText = "noCommands";
+
+            if (commandMessage != null) { commandText = commandMessage.Message; }
+
+
+            await Params.TelegramClient.SendMessageAsync(new TLInputPeerChannel { ChannelId = ControlPanel.Id, AccessHash = ControlPanel.AccessHash.Value }, "<Принято>:" + commandText);
+            
+
+            return commandText;
         }
 
         private async Task ExecuteWatchAdAndWaitForEndOfAdCommand()

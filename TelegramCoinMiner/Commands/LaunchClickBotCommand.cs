@@ -40,21 +40,17 @@ namespace TelegramCoinMiner.Commands
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
-                    ///Summary
                     ///Контролить бота в телеге командами чтобы не сидеть перед компом
-                    ///
+                    //#region ControllPanel 
+                    //var com = await ListenControll();
+                    //if("/stopBot" == com)
+                    //{
+                    //    Console.WriteLine("Bot was stoped");
+                    //    while (ListenControll().Result != "/startBot") await Task.Delay(10000) ;
 
-                    #region ControllPanel 
-                    var com = await ListenControll();
-                    if("/stopBot" == com)
-                    {
-                        Console.WriteLine("Bot was stoped");
-                        while (ListenControll().Result != "/startBot") await Task.Delay(10000) ;
-
-                        Console.WriteLine("Bot was continued");
-                    }
-                    #endregion
-
+                    //    Console.WriteLine("Bot was continued");
+                    //}
+                    //#endregion
 
                     _adMessage = await GetAdMessage();
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
@@ -77,7 +73,7 @@ namespace TelegramCoinMiner.Commands
                     _adMessageNotFoundCount = 0;
                 }
                 await ExecuteSendVisitCommand();
-                await Task.Delay(1000);
+                await Task.Delay((_adMessageNotFoundCount + 1) * 1000);
             }
             catch (BrowserTimeoutException)
             {

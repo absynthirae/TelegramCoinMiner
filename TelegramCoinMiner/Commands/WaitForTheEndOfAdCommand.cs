@@ -20,7 +20,7 @@ namespace TelegramCoinMiner.Commands
            
                 int time = await GetTaskWaitTimeInSeconds();
                 Console.WriteLine("Время ожидания: " + time);
-                await Task.Delay(time * 1000 + 1000);
+                await Task.Delay(time * 1000 + 3000);
            
         }
 

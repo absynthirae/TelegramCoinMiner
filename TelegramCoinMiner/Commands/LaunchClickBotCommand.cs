@@ -18,6 +18,9 @@ namespace TelegramCoinMiner.Commands
         private TLUser _currentChannel;
         private TLMessage _adMessage;
         private int _adMessageNotFoundCount = 0;
+        private int _followTheSameLink;
+        private string _lastLink;
+
         private DateTime _startTime;
 
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
@@ -53,6 +56,20 @@ namespace TelegramCoinMiner.Commands
                     //#endregion
 
                     _adMessage = await GetAdMessage();
+                    var link = _adMessage.GetButtonWithUrl("go to website").Url;
+                    if (_lastLink == link)
+                    {
+                        _followTheSameLink++;
+                        if (_followTheSameLink > 2)
+                        {
+                            await ExecuteSkipCommand();
+                        }
+                    }
+                    else
+                    {
+                        _followTheSameLink = 0;
+                        _lastLink = link;
+                    }
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
                     if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
                     {

@@ -11,17 +11,20 @@ namespace TelegramCoinMiner.Commands
     public class WaitForTheEndOfAdCommand : IAsyncCommand
     {
         WaitForTheEndOfAdParams Params;
+
         public WaitForTheEndOfAdCommand(WaitForTheEndOfAdParams commandParams)
         {
             Params = commandParams;
         }
+
         public async Task Execute()
         {
-           
-                int time = await GetTaskWaitTimeInSeconds();
-                Console.WriteLine("Время ожидания: " + time);
-                await Task.Delay(time * 1000 + 3000);
-           
+            int time = await GetTaskWaitTimeInSeconds();
+            Console.WriteLine("Время ожидания: " + time);
+            var start = DateTime.Now;
+            await Task.Delay(time * 1000 + 3000);
+            var end = DateTime.Now;
+            Console.WriteLine("Прошло: " + (end - start).ToString());
         }
 
         private async Task<int> GetTaskWaitTimeInSeconds()

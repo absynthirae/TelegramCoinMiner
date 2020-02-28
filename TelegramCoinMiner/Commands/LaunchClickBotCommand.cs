@@ -69,7 +69,9 @@ namespace TelegramCoinMiner.Commands
                 _adMessageNotFoundCount++;
                 if (_adMessageNotFoundCount > 10)
                 {
-                    _botSwitcher.Next();
+                    //_botSwitcher.Next();
+                    Console.WriteLine("Заданий нет, ждем 10 минут");
+                    await Task.Delay(TimeSpan.FromMinutes(10));
                     _adMessageNotFoundCount = 0;
                 }
                 await ExecuteSendVisitCommand();

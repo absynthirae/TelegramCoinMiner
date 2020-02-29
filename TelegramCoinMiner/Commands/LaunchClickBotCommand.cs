@@ -46,6 +46,7 @@ namespace TelegramCoinMiner.Commands
                     await CheckRunningTime();
 
                     _adMessage = await GetAdMessage();
+                    _adMessageNotFoundCount = 0;
                     string link = GetAdLink();
                     await CheckDuplicatedAdLink(link);
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();

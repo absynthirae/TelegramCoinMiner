@@ -34,13 +34,6 @@ namespace TelegramCoinMiner.Commands
         {
             try
             {
-                //if (!BotInfoMatchWithChannelInfo())
-                //{
-                //    _currentChannel = await GetCurrentChannel();
-                //    await ExecuteVisitCommand();
-                //    await Task.Delay(2000);
-                //}
-
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
                     await CheckRunningTime();
@@ -123,14 +116,6 @@ namespace TelegramCoinMiner.Commands
         private string GetAdLink()
         {
             return _adMessage.GetButtonWithUrl("go to website").Url;
-        }
-
-        private bool BotInfoMatchWithChannelInfo()
-        {
-            return 
-                _currentChannel != null &&
-                _currentChannel.FirstName != _clickBotInfo.Title && 
-                _currentChannel.Username != _clickBotInfo.BotName;
         }
 
         private async Task ExecuteStartCommand()

@@ -8,6 +8,11 @@ namespace TelegramCoinMiner
     {
         public List<Worker> ClickBotWorkers { get ; set; }
 
+        public ClickBotWorkerPool()
+        {
+            ClickBotWorkers = new List<Worker>();
+        }
+
         public ClickBotWorkerPool(List<LaunchClickBotParams> clickBotsParams)
         {
             ClickBotWorkers = new List<Worker>();
@@ -32,6 +37,12 @@ namespace TelegramCoinMiner
             {
                 worker.Stop();
             }
+        }
+
+        public void Add(LaunchClickBotParams clickBotParams)
+        {
+            var launchCommand = new LaunchClickBotCommand(clickBotParams);
+            ClickBotWorkers.Add(new Worker(() => launchCommand.Execute().Wait(), clickBotParams.TokenSource));
         }
     }
 }

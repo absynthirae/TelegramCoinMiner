@@ -25,11 +25,10 @@ namespace TelegramCoinMiner
 
         public void Start()
         {
-            if (IsWorks)
+            if (!IsWorks)
             {
-                Stop();
+                _workerThread.Start();
             }
-            _workerThread.Start();
         }
 
         private void InitializeWorkerThread(Action workerJob)

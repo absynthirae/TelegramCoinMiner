@@ -14,21 +14,67 @@ namespace TelegramCoinMiner.Commands
     {
         public LaunchClickBotParams Params { get; set; }
 
-        private ClickBotSwitcher _botSwitcher;
+        private ClickBotInfo _clickBotInfo;
         private TLUser _currentChannel;
         private TLMessage _adMessage;
         private int _adMessageNotFoundCount = 0;
         private int _followTheSameLink;
         private string _lastLink;
-
         private DateTime _startTime;
+
+        IAsyncCommand _startCommand;
+        IAsyncCommand _visitCommand;
+        IAsyncCommand _skipAdCommand;
+        IAsyncCommand _watchAndWaitForTheEndOfAdCommand;
 
         public LaunchClickBotCommand(LaunchClickBotParams commandParams)
         {
             Params = commandParams;
-            _botSwitcher = new ClickBotSwitcher();
             _currentChannel = new TLUser();
+            _clickBotInfo = ClickBotInfo.CreateDogecoinClickBotInfo();
             _startTime = DateTime.Now;
+            InitializeCommands();
+        }
+
+        private void InitializeCommands()
+        {
+            _startCommand = new SendStartCommand(
+                            new SendStartParams
+                            {
+                                Channel = _currentChannel,
+                                TelegramClient = Params.TelegramClient,
+                            });
+            _visitCommand = new SendVisitCommand(
+                new SendVisitParams
+                {
+                    Channel = _currentChannel,
+                    TelegramClient = Params.TelegramClient
+                });
+            _skipAdCommand = new SkipAdCommand(
+                new SkipAdParams
+                {
+                    Channel = _currentChannel,
+                    TelegramClient = Params.TelegramClient,
+                    AdMessage = _adMessage
+                });
+            _watchAndWaitForTheEndOfAdCommand = new MacroCommand(
+                new List<IAsyncCommand>()
+                {
+                    new WatchAdCommand(
+                        new WatchAdParams
+                        {
+                            Channel = _currentChannel,
+                            TelegramClient = Params.TelegramClient,
+                            Browser = Params.Browser,
+                            AdMessage = _adMessage
+                        }),
+                    new WaitForTheEndOfAdCommand(
+                        new WaitForTheEndOfAdParams
+                        {
+                            Channel = _currentChannel,
+                            TelegramClient = Params.TelegramClient
+                        })
+                });
         }
 
         public async Task Execute()
@@ -38,47 +84,18 @@ namespace TelegramCoinMiner.Commands
                 if (BotInfoMatchWithChannelInfo())
                 {
                     _currentChannel = await GetCurrentChannel();
-                    await ExecuteSendVisitCommand();
+                    await ExecuteVisitCommand();
+                    await Task.Delay(2000);
                 }
 
                 while (!Params.TokenSource.Token.IsCancellationRequested)
                 {
-                    ///Контролить бота в телеге командами чтобы не сидеть перед компом
-                    //#region ControllPanel 
-                    //var com = await ListenControll();
-                    //if("/stopBot" == com)
-                    //{
-                    //    Console.WriteLine("Bot was stoped");
-                    //    while (ListenControll().Result != "/startBot") await Task.Delay(10000) ;
-
-                    //    Console.WriteLine("Bot was continued");
-                    //}
-                    //#endregion
+                    await CheckRunningTime();
 
                     _adMessage = await GetAdMessage();
-                    var link = _adMessage.GetButtonWithUrl("go to website").Url;
-                    if (_lastLink == link)
-                    {
-                        _followTheSameLink++;
-                        if (_followTheSameLink > 2)
-                        {
-                            await ExecuteSkipCommand();
-                        }
-                    }
-                    else
-                    {
-                        _followTheSameLink = 0;
-                        _lastLink = link;
-                    }
+                    string link = GetAdLink();
+                    await CheckDuplicatedAdLink(link);
                     await ExecuteWatchAdAndWaitForEndOfAdCommand();
-                    if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
-                    {
-                        Console.WriteLine("Прошло 20 минут, отдых");
-                        await Task.Delay(TimeSpan.FromMinutes(5));
-                        _startTime = DateTime.Now;
-                        await ExecuteSendVisitCommand();
-                        await Task.Delay(1000);
-                    }
                 }
             }
             catch (AdMessageNotFoundException)
@@ -87,11 +104,11 @@ namespace TelegramCoinMiner.Commands
                 if (_adMessageNotFoundCount > 10)
                 {
                     //_botSwitcher.Next();
-                    Console.WriteLine("Заданий нет, ждем 10 минут");
+                    Console.WriteLine(DateTime.Now.ToShortTimeString() + "Заданий нет, ждем 10 минут");
                     await Task.Delay(TimeSpan.FromMinutes(10));
                     _adMessageNotFoundCount = 0;
                 }
-                await ExecuteSendVisitCommand();
+                await ExecuteVisitCommand();
                 await Task.Delay((_adMessageNotFoundCount + 1) * 1000);
             }
             catch (BrowserTimeoutException)
@@ -121,48 +138,66 @@ namespace TelegramCoinMiner.Commands
             }
         }
 
-        private bool BotInfoMatchWithChannelInfo()
+        private async Task CheckRunningTime()
         {
-            return _currentChannel.FirstName != _botSwitcher.CurrentBotInfo.Title && 
-                _currentChannel.Username != _botSwitcher.CurrentBotInfo.BotName;
+            if (DateTime.Now - _startTime > TimeSpan.FromMinutes(20))
+            {
+                Console.WriteLine("Прошло 20 минут, отдых");
+                await Task.Delay(TimeSpan.FromMinutes(3));
+                _startTime = DateTime.Now;
+                await ExecuteVisitCommand();
+                await Task.Delay(1000);
+            }
         }
 
-        private async Task ExecuteSendVisitCommand()
+        private async Task CheckDuplicatedAdLink(string link)
         {
-            IAsyncCommand sendVisitCommand = new SendVisitCommand(new SendVisitParams
+            if (_lastLink == link)
             {
-                Channel = _currentChannel,
-                TelegramClient = Params.TelegramClient
-            });
-            await sendVisitCommand.Execute();
+                _followTheSameLink++;
+                if (_followTheSameLink > 2)
+                {
+                    await ExecuteSkipCommand();
+                }
+            }
+            else
+            {
+                _followTheSameLink = 0;
+                _lastLink = link;
+            }
+        }
+
+        private string GetAdLink()
+        {
+            return _adMessage.GetButtonWithUrl("go to website").Url;
+        }
+
+        private bool BotInfoMatchWithChannelInfo()
+        {
+            return _currentChannel.FirstName != _clickBotInfo.Title && 
+                _currentChannel.Username != _clickBotInfo.BotName;
+        }
+
+        private async Task ExecuteVisitCommand()
+        {
+            await _visitCommand.Execute();
         }
 
         private async Task ExecuteStartCommand()
         {
-            IAsyncCommand startCommand = new SendStartCommand(new SendStartParams
-            {
-                Channel = _currentChannel,
-                TelegramClient = Params.TelegramClient,
-            });
-            await startCommand.Execute();
+            await _startCommand.Execute();
         }
 
         private async Task ExecuteSkipCommand()
         {
-            IAsyncCommand skipAdCommand = new SkipAdCommand(new SkipAdParams
-            {
-                Channel = _currentChannel,
-                TelegramClient = Params.TelegramClient,
-                AdMessage = _adMessage
-            });
-            await skipAdCommand.Execute();
+            await _skipAdCommand.Execute();
         }
 
         private async Task<TLUser> GetCurrentChannel()
         {
-            var currentBotInfo = _botSwitcher.CurrentBotInfo;
-            var foundChannels = await Params.TelegramClient.SearchUserAsync(currentBotInfo.BotName);
-            var currentChannel = foundChannels.Users.OfType<TLUser>().FirstOrDefault(x => x.Username == currentBotInfo.BotName && x.FirstName == currentBotInfo.Title);
+            var foundChannels = await Params.TelegramClient.SearchUserAsync(_clickBotInfo.BotName);
+            var currentChannel = foundChannels.Users.OfType<TLUser>()
+                .FirstOrDefault(x => x.Username == _clickBotInfo.BotName && x.FirstName == _clickBotInfo.Title);
             return currentChannel;
         }
 
@@ -175,12 +210,14 @@ namespace TelegramCoinMiner.Commands
                 throw new ClickBotNotStartedException();
             }
 
-            var adMessage = messages.OfType<TLMessage>().FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
+            var adMessage = messages.OfType<TLMessage>()
+                .FirstOrDefault(x => x.Message.Contains("Press the \"Visit website\" button to earn"));
+
             if (adMessage == null)
             {
                 throw new AdMessageNotFoundException();
             }
-            _adMessageNotFoundCount = 0;
+
             return adMessage;
         }
 
@@ -216,23 +253,7 @@ namespace TelegramCoinMiner.Commands
 
         private async Task ExecuteWatchAdAndWaitForEndOfAdCommand()
         {
-            var commands = new List<IAsyncCommand>();
-            commands.Add(new WatchAdCommand(
-                        new WatchAdParams
-                        {
-                            Channel = _currentChannel,
-                            TelegramClient = Params.TelegramClient,
-                            Browser = Params.Browser,
-                            AdMessage = _adMessage
-                        }));
-            commands.Add(new WaitForTheEndOfAdCommand(
-                        new WaitForTheEndOfAdParams
-                        {
-                            Channel = _currentChannel,
-                            TelegramClient = Params.TelegramClient
-                        }));
-            IAsyncCommand macroCommand = new MacroCommand(commands);
-            await macroCommand.Execute();
+            await _watchAndWaitForTheEndOfAdCommand.Execute();
         }
     }
 }
